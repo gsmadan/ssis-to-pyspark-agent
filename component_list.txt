@@ -1,0 +1,103 @@
+﻿=== MAPPING GENERATION FOR ALL 24 COMPONENTS ===
+
+SOURCES (2):
+  1. OLE_SRC bipaEXTRACT Regulatory ClaimStatus
+     Type: OTHER
+     Connection: bipaEXTRACT
+
+  2. OLE_SRC dwCOMMON Regulatory ClaimStatus
+     Type: OTHER
+     Connection: dwCOMMON
+
+TRANSFORMATIONS (21):
+  1. CHK bipaEXTRACT Regulatory ClaimStatus New Checksum
+     Type: CHECKSUM
+     Logic: Checksum transformation...
+
+  2. CMD dwCOMMON Regulatory ClaimStatus Hard Delete
+     Type: OLE_DB_COMMAND
+     Logic: OLE DB command transformation...
+
+  3. CMD UPDATE dwCOMMON Regulatory ClaimStatus
+     Type: OLE_DB_COMMAND
+     Logic: OLE DB command transformation...
+
+  4. CSPL dwCOMMON Regulatory ClaimStatus Determine action
+     Type: CONDITIONAL_SPLIT
+     Logic: INSERT: InExistingFlag ==  FALSE  | NO CHANGE - Default Row: IsDefaultRowFlag ==...
+
+  5. DER bipaEXTRACT Regulatory ClaimStatus Default Flags
+     Type: DERIVED_COLUMN
+     Logic: DeletedFlag = 0 | TemplateFlag = 0...
+
+  6. DER Custom derived columns and other calculations - Add any custom processing here
+     Type: DERIVED_COLUMN
+     Logic: No derived column logic found...
+
+  7. DER dwCOMMON Regulatory ClaimStatus Nullable columns (For CSPL)
+     Type: DERIVED_COLUMN
+     Logic: No derived column logic found...
+
+  8. DER Processing flags
+     Type: DERIVED_COLUMN
+     Logic: InExistingFlag = !ISNULL(SurrogateKey) | InFeedFlag = !ISNULL(NaturalKey_NEW) | ...
+
+  9. MRGJ dwCOMMON Regulatory ClaimStatus
+     Type: MERGE
+     Logic: Transformation type: MERGE...
+
+  10. RC DELETE dwCOMMON Regulatory ClaimStatus Hard Delete
+     Type: RC_DELETE
+     Logic: Transformation type: RC_DELETE...
+
+  11. RC INSERT dwCOMMON Regulatory ClaimStatus
+     Type: RC_INSERT
+     Logic: Transformation type: RC_INSERT...
+
+  12. RC INT dwCOMMON Regulatory ClaimStatus Arrived but Unchanged
+     Type: RC_INTERMEDIATE
+     Logic: Transformation type: RC_INTERMEDIATE...
+
+  13. RC INT dwCOMMON Regulatory ClaimStatus Default row
+     Type: RC_INTERMEDIATE
+     Logic: Transformation type: RC_INTERMEDIATE...
+
+  14. RC INT dwCOMMON Regulatory ClaimStatus Not Arrived but already Hard Deleted
+     Type: RC_INTERMEDIATE
+     Logic: Transformation type: RC_INTERMEDIATE...
+
+  15. RC INT dwCOMMON Regulatory ClaimStatus Total Rows
+     Type: RC_INTERMEDIATE
+     Logic: Transformation type: RC_INTERMEDIATE...
+
+  16. RC SELECT bipaEXTRACT Regulatory ClaimStatus
+     Type: RC_SELECT
+     Logic: Transformation type: RC_SELECT...
+
+  17. RC SELECT dwCOMMON Regulatory ClaimStatus
+     Type: RC_SELECT
+     Logic: Transformation type: RC_SELECT...
+
+  18. RC UPDATE dwCOMMON Regulatory ClaimStatus
+     Type: RC_UPDATE
+     Logic: Transformation type: RC_UPDATE...
+
+  19. TD dwCOMMON Regulatory ClaimStatus Arrived but Unchanged
+     Type: TRASH_DESTINATION
+     Logic: Transformation type: TRASH_DESTINATION...
+
+  20. TD dwCOMMON Regulatory ClaimStatus Default Row
+     Type: TRASH_DESTINATION
+     Logic: Transformation type: TRASH_DESTINATION...
+
+  21. TD dwCOMMON Regulatory ClaimStatus Not Arrived but already Hard Deleted
+     Type: TRASH_DESTINATION
+     Logic: Transformation type: TRASH_DESTINATION...
+
+DESTINATIONS (1):
+  1. OLE_DST dwCOMMON Regulatory ClaimStatus
+     Type: OTHER
+     Table: [Regulatory].[ClaimStatus]
+
+
+=== TOTAL: 24 COMPONENTS ===

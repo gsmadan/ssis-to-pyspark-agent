@@ -1,0 +1,28 @@
+{
+  "connection_mappings": {
+    "SRC_OLEDB": {
+      "databricks_schema": "dev_bronze.src",
+      "table_mappings": {
+        "dbo.SRC_InputTable": "src_inputtable",
+        "dbo.LKP_CategoryTable": "lkp_categorytable",
+        "dbo.LKP_CountryTable": "lkp_countrytable",
+        "dbo.LKP_LocalCategoryTable": "lkp_localcategorytable"
+      }
+    },
+    "LKP_OLEDB": {
+      "databricks_schema": "dev_bronze.lkp",
+      "table_mappings": {
+        "dbo.LKP_CategoryTable": "lkp_categorytable",
+        "dbo.LKP_CountryTable": "lkp_countrytable",
+        "dbo.LKP_LocalCategoryTable": "lkp_localcategorytable"
+      }
+    },
+    "DBX_Output": {
+      "databricks_schema": "dev_silver.dbx",
+      "table_mappings": {
+        "dbo.DST_GenericTable": "dst_generictable"
+      }
+    }
+  }
+}
+

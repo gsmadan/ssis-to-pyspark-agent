@@ -1,0 +1,137 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Project specific
+temp/
+*.log
+*.tmp
+
+# PyInstaller build artifacts
+build/
+dist/
+*.spec~
+ssis_converter.log
+
+# Output files (optional - remove if you want to track outputs)
+# output/*.json
+# output/*.py
+
+# OS specific
+Thumbs.db
+.DS_Store
+
+# Large files and test data
+*.zip
+Harsh-KT.zip
+testing/
+ssis_to_pyspark_converter versions/
+
+# Sample packages (optional - uncomment if you don't want to push samples)
+# input-sample packages/
+# output-sample-packages/
+
+# Output directories (optional - uncomment if you don't want to track outputs)
+output/
+temp/
+
+# Other files
+BUILD_INSTRUCTIONS.md
+DEPLOYMENT_GUIDE.md
+GITHUB_READY.md
+GITHUB_SETUP.md
+LICENSE
+Prompt - Build Sample Packages.md
+QUICK_GITHUB_COMMANDS.md
+README_CLIENT.md
+README_GITHUB.md
+build_exe.bat
+build_exe.py
+code_generation/__init__.py
+code_generation/databricks_client.py
+code_generation/llm_code_generator.py
+component_list.txt
+conversion_log_1028.txt
+databricks_notebook_template.py
+docs/COMPLETE_PROJECT_GUIDE.md
+docs/DATABRICKS_TESTING_GUIDE.md
+docs/DEPLOYMENT_GUIDE.md
+docs/Indented_SSIS_to_PySpark_Handover (1) 1.docx
+docs/LATEST_UPDATES.md
+docs/SSIS-to-PySpark-Conversion-Pipeline 1.pdf
+docs/TECHNICAL_REFERENCE.md
+docs/document_analysis_improvements.json
+docs/extracted_handover_document.txt
+mapping/__init__.py
+output-sample-packages/analysis/conversion_report.json
+output-sample-packages/mapping_details/Sample_Medium_Package_mapping.json
+output-sample-packages/mapping_details/Sample_Simple_Package_mapping.json
+output-sample-packages/parsed_json/Sample_Medium_Package_data_engineering.json
+output-sample-packages/parsed_json/Sample_Simple_Package_data_engineering.json
+output-sample-packages/pyspark_code/Sample_Medium_Package_pyspark.py
+output-sample-packages/pyspark_code/Sample_Simple_Package_pyspark.py
+parsing/__init__.py
+parsing/enhanced_xml_processor.py
+scripts/deploy_to_databricks.ps1
+scripts/package_for_databricks.ps1
+scripts/parse_all_packages.py
+scripts/show_execution_flow.py
+scripts/test_geminiapikey.py
+scripts/validate_pyspark_syntax.py
+setup_github.ps1
+ssis_to_pyspark.spec
+ssis_to_pyspark_gui.py
+ssis_to_pyspark_gui.spec
+test_schema_mapping.json
+test_schema_mapping.py
+test_schema_mapping_validation.py

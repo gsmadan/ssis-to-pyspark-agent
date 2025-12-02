@@ -1,0 +1,910 @@
+<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:refId="Package" DTS:CreationDate="1/1/2024" DTS:CreationName="Microsoft.Package" DTS:CreatorComputerName="" DTS:CreatorName="" DTS:DTSID="{A1B2C3D4-E5F6-4789-A012-B3456789CDEF}" DTS:EnableConfig="True" DTS:ExecutableType="Microsoft.Package" DTS:LastModifiedProductVersion="15.0.0900.40" DTS:LocaleID="2057" DTS:ObjectName="Sample Medium Package" DTS:PackageType="5" DTS:VersionBuild="1" DTS:VersionGUID="{B1C2D3E4-F5A6-4789-B012-C3456789DEF0}">
+  <DTS:Property DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager DTS:refId="Package.ConnectionManagers[SRC_OLEDB]" DTS:CreationName="OLEDB" DTS:DTSID="{C1D2E3F4-A5B6-4789-C012-D3456789EF01}" DTS:ObjectName="SRC_OLEDB">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager DTS:ConnectionString="Data Source=localhost;Initial Catalog=SRC_Database;Provider=SQLNCLI11.1;Integrated Security=SSPI;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager DTS:refId="Package.ConnectionManagers[LKP_OLEDB]" DTS:CreationName="OLEDB" DTS:DTSID="{D1E2F3A4-B5C6-4789-D012-E3456789F012}" DTS:ObjectName="LKP_OLEDB">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager DTS:ConnectionString="Data Source=localhost;Initial Catalog=LKP_Database;Provider=SQLNCLI11.1;Integrated Security=SSPI;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager DTS:refId="Package.ConnectionManagers[DBX_Output]" DTS:CreationName="OLEDB" DTS:DTSID="{E1F2A3B4-C5D6-4789-E012-F34567890123}" DTS:ObjectName="DBX_Output">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager DTS:ConnectionString="Data Source=localhost;Initial Catalog=DST_Database;Provider=SQLNCLI11.1;Integrated Security=SSPI;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables>
+    <DTS:Variable DTS:CreationName="" DTS:DTSID="{F1A2B3C4-D5E6-4789-F012-A34567891234}" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="SourceRowCount">
+      <DTS:VariableValue DTS:DataType="3">0</DTS:VariableValue>
+    </DTS:Variable>
+  </DTS:Variables>
+  <DTS:LoggingOptions DTS:FilterKind="0" DTS:LoggingMode="0" />
+  <DTS:Executables>
+    <DTS:Executable DTS:refId="Package\SQL Check Regulatory RowCount" DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{A2B3C4D5-E6F7-4789-A123-B45678901234}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="SQL Check Regulatory RowCount" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server v9; © 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1" DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData SQLTask:Connection="{C1D2E3F4-A5B6-4789-C012-D3456789EF01}" SQLTask:SqlStatementSource="SELECT COUNT(*) AS SourceRowCount&#xA;FROM [dbo].[SRC_InputTable]" SQLTask:ResultType="ResultSetType_SingleRow"
+          xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          <SQLTask:ResultBinding SQLTask:ResultName="SourceRowCount" SQLTask:DtsVariableName="User::SourceRowCount" />
+        </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable DTS:refId="Package\DFT Load" DTS:CreationName="Microsoft.Pipeline" DTS:Description="Data Flow Task" DTS:DTSID="{B2C3D4E5-F6A7-4789-B123-C45678901234}" DTS:ExecutableType="Microsoft.Pipeline" DTS:LocaleID="-1" DTS:ObjectName="DFT Load" DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server v9; (C) 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables>
+        <DTS:Variable DTS:CreationName="" DTS:DTSID="{C2D3E4F5-A6B7-4789-C123-D45678901234}" DTS:IncludeInDebugDump="6789" DTS:Namespace="User" DTS:ObjectName="TaskWorkHistoryID">
+          <DTS:VariableValue DTS:DataType="3">-1</DTS:VariableValue>
+        </DTS:Variable>
+      </DTS:Variables>
+      <DTS:LoggingOptions DTS:FilterKind="0" />
+      <DTS:ObjectData>
+        <pipeline BLOBTempStoragePath="" bufferTempStoragePath="" engineThreads="5" version="1">
+          <components>
+            <component refId="Package\DFT Load\OLE_SRC" componentClassID="Microsoft.OLEDBSource" contactInfo="OLE DB Source;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7" description="OLE DB Source" name="OLE_SRC" usesDispositions="true" version="7">
+              <properties>
+                <property dataType="System.Int32" description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out." name="CommandTimeout">0</property>
+                <property dataType="System.String" description="Specifies the name of the database object used to open a rowset." name="OpenRowset"></property>
+                <property dataType="System.String" description="Specifies the variable that contains the name of the database object used to open a rowset." name="OpenRowsetVariable"></property>
+                <property dataType="System.String" description="The SQL command to be executed." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT
+  [CategoryCode],
+  [CountryCode],
+  [Status]
+FROM
+  [dbo].[SRC_InputTable]</property>
+                <property dataType="System.Int32" description="Specifies the mode used to access the database." name="AccessMode" typeConverter="AccessMode">2</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT Load\OLE_SRC.Connections[OleDbConnection]" connectionManagerID="Package.ConnectionManagers[SRC_OLEDB]" connectionManagerRefId="Package.ConnectionManagers[SRC_OLEDB]" description="The OLE DB runtime connection used to access the database." name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output refId="Package\DFT Load\OLE_SRC.Outputs[OLE DB Source Output]" name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[CategoryCode]" dataType="i4" errorOrTruncationOperation="Conversion" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[CategoryCode]" name="CategoryCode" truncationRowDisposition="FailComponent" />
+                    <outputColumn refId="Package\DFT Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[CountryCode]" codePage="1252" dataType="str" errorOrTruncationOperation="Conversion" errorRowDisposition="FailComponent" length="2" lineageId="Package\DFT Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[CountryCode]" name="CountryCode" truncationRowDisposition="FailComponent" />
+                    <outputColumn refId="Package\DFT Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[CategoryDescription]" codePage="1252" dataType="str" errorOrTruncationOperation="Conversion" errorRowDisposition="FailComponent" length="255" lineageId="Package\DFT Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[CategoryDescription]" name="CategoryDescription" truncationRowDisposition="FailComponent" />
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\OLE_SRC_Existing" componentClassID="Microsoft.OLEDBSource" contactInfo="OLE DB Source;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7" description="OLE DB Source for existing data" name="OLE_SRC_Existing" usesDispositions="true" version="7">
+              <properties>
+                <property dataType="System.Int32" description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out." name="CommandTimeout">0</property>
+                <property dataType="System.String" description="The SQL command to be executed." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT
+  [CountryID],
+  [CategoryID],
+  CASE WHEN [CountryID] IN (-1, -2) THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS [IsDefaultRowFlag],
+  [ETLCheckSum] AS [CheckSum_OLD],
+  [DeletedFlag] AS [DeletedFlag_OLD]
+FROM
+  [dbo].[DST_GenericTable]
+ORDER BY
+  [CountryID],
+  [CategoryID]</property>
+                <property dataType="System.Int32" description="Specifies the mode used to access the database." name="AccessMode" typeConverter="AccessMode">2</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT Load\OLE_SRC_Existing.Connections[OleDbConnection]" connectionManagerID="Package.ConnectionManagers[DBX_Output]" connectionManagerRefId="Package.ConnectionManagers[DBX_Output]" description="The OLE DB runtime connection used to access the database." name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output refId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output]" isSorted="true" name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output].Columns[CountryID]" dataType="i2" errorOrTruncationOperation="Conversion" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output].Columns[CountryID]" name="CountryID" sortKeyPosition="1" truncationRowDisposition="FailComponent" />
+                    <outputColumn refId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output].Columns[CategoryID]" dataType="i4" errorOrTruncationOperation="Conversion" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output].Columns[CategoryID]" name="CategoryID" sortKeyPosition="2" truncationRowDisposition="FailComponent" />
+                    <outputColumn refId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output].Columns[IsDefaultRowFlag]" dataType="bool" errorOrTruncationOperation="Conversion" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output].Columns[IsDefaultRowFlag]" name="IsDefaultRowFlag" truncationRowDisposition="FailComponent" />
+                    <outputColumn refId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output].Columns[CheckSum_OLD]" dataType="i4" errorOrTruncationOperation="Conversion" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output].Columns[CheckSum_OLD]" name="CheckSum_OLD" truncationRowDisposition="FailComponent" />
+                    <outputColumn refId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output].Columns[DeletedFlag_OLD]" dataType="ui1" errorOrTruncationOperation="Conversion" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output].Columns[DeletedFlag_OLD]" name="DeletedFlag_OLD" truncationRowDisposition="FailComponent" />
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\RC Select" componentClassID="Microsoft.RowCount" contactInfo="Row Count;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Counts rows passing through" name="RC Select" usesDispositions="true">
+              <properties>
+                <property dataType="System.String" description="Variable to store the row count" name="VariableName">User::VAR_SelectRowCount</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT Load\RC Select.Inputs[RowCountInput]" name="RowCountInput">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\RC Select.Outputs[RowCountOutput]" name="RowCountOutput" synchronousInputId="Package\DFT Load\RC Select.Inputs[RowCountInput]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\LKP_1" componentClassID="Microsoft.Lookup" contactInfo="Lookup;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4" description="Looks up values in a reference dataset by using exact matching." name="LKP_1" usesDispositions="true" version="6">
+              <properties>
+                <property dataType="System.String" description="Specifies the SQL statement that generates the lookup table." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT
+  [LocalCategoryID],
+  [CategoryDescription]
+FROM
+  [dbo].[LKP_LocalCategoryTable]</property>
+                <property dataType="System.Int32" description="Specifies the cache type of the lookup table." name="CacheType" typeConverter="CacheType">0</property>
+                <property dataType="System.Int32" description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set." name="NoMatchBehavior" typeConverter="LookupNoMatchBehavior">0</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT Load\LKP_1.Connections[OleDbConnection]" connectionManagerID="Package.ConnectionManagers[LKP_OLEDB]" connectionManagerRefId="Package.ConnectionManagers[LKP_OLEDB]" description="Connection manager used to access lookup data." name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input refId="Package\DFT Load\LKP_1.Inputs[Lookup Input]" name="Lookup Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT Load\LKP_1.Inputs[Lookup Input].Columns[CategoryDescription]" cachedCodepage="1252" cachedDataType="str" cachedLength="255" cachedName="CategoryDescription" lineageId="Package\DFT Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[CategoryDescription]">
+                      <properties>
+                        <property dataType="System.String" description="Specifies the column in the reference table that a column joins." name="JoinToReferenceColumn">CategoryDescription</property>
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\LKP_1.Outputs[Lookup Match Output]" errorOrTruncationOperation="Lookup" errorRowDisposition="FailComponent" exclusionGroup="1" name="Lookup Match Output" synchronousInputId="Package\DFT Load\LKP_1.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT Load\LKP_1.Outputs[Lookup Match Output].Columns[LocalCategoryID]" dataType="i4" errorOrTruncationOperation="Copy Column" lineageId="Package\DFT Load\LKP_1.Outputs[Lookup Match Output].Columns[LocalCategoryID]" name="LocalCategoryID" truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property dataType="System.String" description="Specifies the column in the reference table from which a column is copied." name="CopyFromReferenceColumn">LocalCategoryID</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\LKP_2" componentClassID="Microsoft.Lookup" contactInfo="Lookup;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4" description="Looks up values in a reference dataset by using exact matching." name="LKP_2" usesDispositions="true" version="6">
+              <properties>
+                <property dataType="System.String" description="Specifies the SQL statement that generates the lookup table." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT
+  [CategoryID],
+  [CategoryCode]
+FROM
+  [dbo].[LKP_CategoryTable]</property>
+                <property dataType="System.Int32" description="Specifies the cache type of the lookup table." name="CacheType" typeConverter="CacheType">0</property>
+                <property dataType="System.Int32" description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set." name="NoMatchBehavior" typeConverter="LookupNoMatchBehavior">0</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT Load\LKP_2.Connections[OleDbConnection]" connectionManagerID="Package.ConnectionManagers[LKP_OLEDB]" connectionManagerRefId="Package.ConnectionManagers[LKP_OLEDB]" description="Connection manager used to access lookup data." name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input refId="Package\DFT Load\LKP_2.Inputs[Lookup Input]" name="Lookup Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT Load\LKP_2.Inputs[Lookup Input].Columns[CategoryCode]" cachedDataType="i4" cachedName="CategoryCode" lineageId="Package\DFT Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[CategoryCode]">
+                      <properties>
+                        <property dataType="System.String" description="Specifies the column in the reference table that a column joins." name="JoinToReferenceColumn">CategoryCode</property>
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\LKP_2.Outputs[Lookup Match Output]" errorOrTruncationOperation="Lookup" errorRowDisposition="FailComponent" exclusionGroup="1" name="Lookup Match Output" synchronousInputId="Package\DFT Load\LKP_2.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT Load\LKP_2.Outputs[Lookup Match Output].Columns[CategoryID]" dataType="i4" errorOrTruncationOperation="Copy Column" lineageId="Package\DFT Load\LKP_2.Outputs[Lookup Match Output].Columns[CategoryID]" name="CategoryID" truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property dataType="System.String" description="Specifies the column in the reference table from which a column is copied." name="CopyFromReferenceColumn">CategoryID</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\LKP_3" componentClassID="Microsoft.Lookup" contactInfo="Lookup;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4" description="Looks up values in a reference dataset by using exact matching." name="LKP_3" usesDispositions="true" version="6">
+              <properties>
+                <property dataType="System.String" description="Specifies the SQL statement that generates the lookup table." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT
+  [CountryID],
+  [CountryCode]
+FROM
+  [dbo].[LKP_CountryTable]</property>
+                <property dataType="System.Int32" description="Specifies the cache type of the lookup table." name="CacheType" typeConverter="CacheType">0</property>
+                <property dataType="System.Int32" description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set." name="NoMatchBehavior" typeConverter="LookupNoMatchBehavior">0</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT Load\LKP_3.Connections[OleDbConnection]" connectionManagerID="Package.ConnectionManagers[LKP_OLEDB]" connectionManagerRefId="Package.ConnectionManagers[LKP_OLEDB]" description="Connection manager used to access lookup data." name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input refId="Package\DFT Load\LKP_3.Inputs[Lookup Input]" name="Lookup Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT Load\LKP_3.Inputs[Lookup Input].Columns[CountryCode]" cachedCodepage="1252" cachedDataType="str" cachedLength="2" cachedName="CountryCode" lineageId="Package\DFT Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[CountryCode]">
+                      <properties>
+                        <property dataType="System.String" description="Specifies the column in the reference table that a column joins." name="JoinToReferenceColumn">CountryCode</property>
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\LKP_3.Outputs[Lookup Match Output]" errorOrTruncationOperation="Lookup" errorRowDisposition="FailComponent" exclusionGroup="1" name="Lookup Match Output" synchronousInputId="Package\DFT Load\LKP_3.Inputs[Lookup Input]">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT Load\LKP_3.Outputs[Lookup Match Output].Columns[CountryID]" dataType="i2" errorOrTruncationOperation="Copy Column" lineageId="Package\DFT Load\LKP_3.Outputs[Lookup Match Output].Columns[CountryID]" name="CountryID" truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property dataType="System.String" description="Specifies the column in the reference table from which a column is copied." name="CopyFromReferenceColumn">CountryID</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\SRT" componentClassID="Microsoft.Sort" contactInfo="Sort;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Sorts data" name="SRT" usesDispositions="true">
+              <properties>
+                <property dataType="System.Boolean" description="Removes duplicate rows" name="EliminateDuplicates">false</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT Load\SRT.Inputs[Sort Input]" name="Sort Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT Load\SRT.Inputs[Sort Input].Columns[CountryID]" cachedDataType="i2" cachedName="CountryID" cachedSortKeyPosition="1" cachedSortOrder="Ascending" lineageId="Package\DFT Load\LKP_3.Outputs[Lookup Match Output].Columns[CountryID]">
+                      <properties>
+                        <property dataType="System.Int32" description="Specifies the comparison options for character data." name="NewComparisonFlags">0</property>
+                        <property dataType="System.Int32" description="Specifies the sort order of the column." name="NewSortKeyPosition">1</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn refId="Package\DFT Load\SRT.Inputs[Sort Input].Columns[CategoryID]" cachedDataType="i4" cachedName="CategoryID" cachedSortKeyPosition="2" cachedSortOrder="Ascending" lineageId="Package\DFT Load\LKP_2.Outputs[Lookup Match Output].Columns[CategoryID]">
+                      <properties>
+                        <property dataType="System.Int32" description="Specifies the comparison options for character data." name="NewComparisonFlags">0</property>
+                        <property dataType="System.Int32" description="Specifies the sort order of the column." name="NewSortKeyPosition">2</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn refId="Package\DFT Load\SRT.Inputs[Sort Input].Columns[LocalCategoryID]" cachedDataType="i4" cachedName="LocalCategoryID" cachedSortKeyPosition="0" cachedSortOrder="Ascending" lineageId="Package\DFT Load\LKP_1.Outputs[Lookup Match Output].Columns[LocalCategoryID]">
+                      <properties>
+                        <property dataType="System.Int32" description="Specifies the comparison options for character data." name="NewComparisonFlags">0</property>
+                        <property dataType="System.Int32" description="Specifies the sort order of the column." name="NewSortKeyPosition">0</property>
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\SRT.Outputs[Sort Output]" isSorted="true" name="Sort Output" synchronousInputId="Package\DFT Load\SRT.Inputs[Sort Input]">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT Load\SRT.Outputs[Sort Output].Columns[CountryID]" dataType="i2" lineageId="Package\DFT Load\SRT.Outputs[Sort Output].Columns[CountryID]" name="CountryID" sortKeyPosition="1">
+                      <properties>
+                        <property containsID="true" dataType="System.Int32" description="Specifies the lineage identifier of the input column that is associated with this output column." name="SortColumnId">#{Package\DFT Load\LKP_3.Outputs[Lookup Match Output].Columns[CountryID]}</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\SRT.Outputs[Sort Output].Columns[CategoryID]" dataType="i4" lineageId="Package\DFT Load\SRT.Outputs[Sort Output].Columns[CategoryID]" name="CategoryID" sortKeyPosition="2">
+                      <properties>
+                        <property containsID="true" dataType="System.Int32" description="Specifies the lineage identifier of the input column that is associated with this output column." name="SortColumnId">#{Package\DFT Load\LKP_2.Outputs[Lookup Match Output].Columns[CategoryID]}</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\SRT.Outputs[Sort Output].Columns[LocalCategoryID]" dataType="i4" lineageId="Package\DFT Load\SRT.Outputs[Sort Output].Columns[LocalCategoryID]" name="LocalCategoryID">
+                      <properties>
+                        <property containsID="true" dataType="System.Int32" description="Specifies the lineage identifier of the input column that is associated with this output column." name="SortColumnId">#{Package\DFT Load\LKP_1.Outputs[Lookup Match Output].Columns[LocalCategoryID]}</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\DER" componentClassID="Microsoft.DerivedColumn" contactInfo="Derived Column;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Updates column values using expressions" name="DER" usesDispositions="true">
+              <inputs>
+                <input refId="Package\DFT Load\DER.Inputs[Derived Column Input]" description="Input to the Derived Column Transformation" name="Derived Column Input">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\DER.Outputs[Derived Column Output]" description="Default Output of the Derived Column Transformation" exclusionGroup="1" name="Derived Column Output" synchronousInputId="Package\DFT Load\DER.Inputs[Derived Column Input]">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT Load\DER.Outputs[Derived Column Output].Columns[ProcessFlag]" dataType="bool" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\DER.Outputs[Derived Column Output].Columns[ProcessFlag]" name="ProcessFlag" truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property containsID="true" dataType="System.String" description="Derived Column Expression" name="Expression">1 == 1</property>
+                        <property containsID="true" dataType="System.String" description="Derived Column Friendly Expression" expressionType="Notify" name="FriendlyExpression">1 == 1</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\RC Select Existing" componentClassID="Microsoft.RowCount" contactInfo="Row Count;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Counts rows passing through" name="RC Select Existing" usesDispositions="true">
+              <properties>
+                <property dataType="System.String" description="Variable to store the row count" name="VariableName">User::VAR_SelectRowCountExisting</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT Load\RC Select Existing.Inputs[RowCountInput]" name="RowCountInput">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\RC Select Existing.Outputs[RowCountOutput]" name="RowCountOutput" synchronousInputId="Package\DFT Load\RC Select Existing.Inputs[RowCountInput]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\CHK" componentClassID="Microsoft.DerivedColumn" contactInfo="Derived Column;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Updates column values using expressions" name="CHK" usesDispositions="true">
+              <inputs>
+                <input refId="Package\DFT Load\CHK.Inputs[Derived Column Input]" description="Input to the Derived Column Transformation" name="Derived Column Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT Load\CHK.Inputs[Derived Column Input].Columns[CountryID]" cachedDataType="i2" cachedName="CountryID" cachedSortKeyPosition="1" lineageId="Package\DFT Load\SRT.Outputs[Sort Output].Columns[CountryID]" />
+                    <inputColumn refId="Package\DFT Load\CHK.Inputs[Derived Column Input].Columns[CategoryID]" cachedDataType="i4" cachedName="CategoryID" cachedSortKeyPosition="2" lineageId="Package\DFT Load\SRT.Outputs[Sort Output].Columns[CategoryID]" />
+                    <inputColumn refId="Package\DFT Load\CHK.Inputs[Derived Column Input].Columns[LocalCategoryID]" cachedDataType="i4" cachedName="LocalCategoryID" lineageId="Package\DFT Load\SRT.Outputs[Sort Output].Columns[LocalCategoryID]" />
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\CHK.Outputs[Derived Column Output]" description="Default Output of the Derived Column Transformation" exclusionGroup="1" name="Derived Column Output" synchronousInputId="Package\DFT Load\CHK.Inputs[Derived Column Input]">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT Load\CHK.Outputs[Derived Column Output].Columns[CheckSum_NEW]" dataType="i4" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\CHK.Outputs[Derived Column Output].Columns[CheckSum_NEW]" name="CheckSum_NEW" truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property containsID="true" dataType="System.String" description="Derived Column Expression" name="Expression">(DT_I4)([CountryID] + [CategoryID] + [LocalCategoryID])</property>
+                        <property containsID="true" dataType="System.String" description="Derived Column Friendly Expression" expressionType="Notify" name="FriendlyExpression">(DT_I4)([CountryID] + [CategoryID] + [LocalCategoryID])</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\DER_DefaultFlags" componentClassID="Microsoft.DerivedColumn" contactInfo="Derived Column;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Updates column values using expressions" name="DER_DefaultFlags" usesDispositions="true">
+              <inputs>
+                <input refId="Package\DFT Load\DER_DefaultFlags.Inputs[Derived Column Input]" description="Input to the Derived Column Transformation" name="Derived Column Input">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\DER_DefaultFlags.Outputs[Derived Column Output]" description="Default Output of the Derived Column Transformation" exclusionGroup="1" name="Derived Column Output" synchronousInputId="Package\DFT Load\DER_DefaultFlags.Inputs[Derived Column Input]">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT Load\DER_DefaultFlags.Outputs[Derived Column Output].Columns[DeletedFlag]" dataType="ui1" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\DER_DefaultFlags.Outputs[Derived Column Output].Columns[DeletedFlag]" name="DeletedFlag" truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property containsID="true" dataType="System.String" description="Derived Column Expression" name="Expression">0</property>
+                        <property containsID="true" dataType="System.String" description="Derived Column Friendly Expression" expressionType="Notify" name="FriendlyExpression">0</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\DER_DefaultFlags.Outputs[Derived Column Output].Columns[TemplateFlag]" dataType="ui1" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\DER_DefaultFlags.Outputs[Derived Column Output].Columns[TemplateFlag]" name="TemplateFlag" truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property containsID="true" dataType="System.String" description="Derived Column Expression" name="Expression">0</property>
+                        <property containsID="true" dataType="System.String" description="Derived Column Friendly Expression" expressionType="Notify" name="FriendlyExpression">0</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\DER_NullableColumns" componentClassID="Microsoft.DerivedColumn" contactInfo="Derived Column;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Updates column values using expressions" name="DER_NullableColumns" usesDispositions="true">
+              <inputs>
+                <input refId="Package\DFT Load\DER_NullableColumns.Inputs[Derived Column Input]" description="Input to the Derived Column Transformation" name="Derived Column Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT Load\DER_NullableColumns.Inputs[Derived Column Input].Columns[DeletedFlag_OLD]" cachedDataType="ui1" cachedName="DeletedFlag_OLD" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[DeletedFlag_OLD]" truncationRowDisposition="FailComponent" usageType="readWrite">
+                      <properties>
+                        <property containsID="true" dataType="System.String" description="Derived Column Expression" name="Expression">ISNULL(DeletedFlag_OLD) == TRUE ? 0 : DeletedFlag_OLD</property>
+                        <property containsID="true" dataType="System.String" description="Derived Column Friendly Expression" expressionType="Notify" name="FriendlyExpression">ISNULL(DeletedFlag_OLD) == TRUE ? 0 : DeletedFlag_OLD</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn refId="Package\DFT Load\DER_NullableColumns.Inputs[Derived Column Input].Columns[CheckSum_New]" cachedDataType="i4" cachedName="CheckSum_New" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CheckSum_New]" truncationRowDisposition="FailComponent" usageType="readWrite">
+                      <properties>
+                        <property containsID="true" dataType="System.String" description="Derived Column Expression" name="Expression">ISNULL(CheckSum_New) == TRUE ? -1 : CheckSum_New</property>
+                        <property containsID="true" dataType="System.String" description="Derived Column Friendly Expression" expressionType="Notify" name="FriendlyExpression">ISNULL(CheckSum_New) == TRUE ? -1 : CheckSum_New</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn refId="Package\DFT Load\DER_NullableColumns.Inputs[Derived Column Input].Columns[CheckSum_OLD]" cachedDataType="i4" cachedName="CheckSum_OLD" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CheckSum_OLD]" truncationRowDisposition="FailComponent" usageType="readWrite">
+                      <properties>
+                        <property containsID="true" dataType="System.String" description="Derived Column Expression" name="Expression">ISNULL(CheckSum_OLD) == TRUE ? -1 : CheckSum_OLD</property>
+                        <property containsID="true" dataType="System.String" description="Derived Column Friendly Expression" expressionType="Notify" name="FriendlyExpression">ISNULL(CheckSum_OLD) == TRUE ? -1 : CheckSum_OLD</property>
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\DER_NullableColumns.Outputs[Derived Column Output]" description="Default Output of the Derived Column Transformation" exclusionGroup="1" name="Derived Column Output" synchronousInputId="Package\DFT Load\DER_NullableColumns.Inputs[Derived Column Input]">
+                  <outputColumns>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\MRGJ" componentClassID="Microsoft.MergeJoin" contactInfo="Merge Join;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;1" description="Merges data from two datasets by using a join." name="MRGJ" version="1">
+              <properties>
+                <property dataType="System.Int32" description="Specifies the type of join to perform." name="JoinType" typeConverter="JoinType">0</property>
+                <property dataType="System.Int32" description="Specifies the number of columns in the ordering key." name="NumKeyColumns">2</property>
+                <property dataType="System.Boolean" description="Indicates whether the null values are treated as equal values." name="TreatNullsAsEqual">true</property>
+                <property dataType="System.Int32" description="Indicates the requested maximum buffers per input before blocking." name="MaxBuffersPerInput">5</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT Load\MRGJ.Inputs[Merge Join Left Input]" hasSideEffects="true" name="Merge Join Left Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT Load\MRGJ.Inputs[Merge Join Left Input].Columns[CheckSum_NEW]" cachedDataType="i4" cachedName="CheckSum_NEW" lineageId="Package\DFT Load\CHK.Outputs[Derived Column Output].Columns[CheckSum_NEW]" />
+                    <inputColumn refId="Package\DFT Load\MRGJ.Inputs[Merge Join Left Input].Columns[DeletedFlag]" cachedDataType="ui1" cachedName="DeletedFlag" lineageId="Package\DFT Load\DER_DefaultFlags.Outputs[Derived Column Output].Columns[DeletedFlag]" />
+                    <inputColumn refId="Package\DFT Load\MRGJ.Inputs[Merge Join Left Input].Columns[TemplateFlag]" cachedDataType="ui1" cachedName="TemplateFlag" lineageId="Package\DFT Load\DER_DefaultFlags.Outputs[Derived Column Output].Columns[TemplateFlag]" />
+                    <inputColumn refId="Package\DFT Load\MRGJ.Inputs[Merge Join Left Input].Columns[CountryID]" cachedDataType="i2" cachedName="CountryID" cachedSortKeyPosition="1" lineageId="Package\DFT Load\SRT.Outputs[Sort Output].Columns[CountryID]" />
+                    <inputColumn refId="Package\DFT Load\MRGJ.Inputs[Merge Join Left Input].Columns[CategoryID]" cachedDataType="i4" cachedName="CategoryID" cachedSortKeyPosition="2" lineageId="Package\DFT Load\SRT.Outputs[Sort Output].Columns[CategoryID]" />
+                    <inputColumn refId="Package\DFT Load\MRGJ.Inputs[Merge Join Left Input].Columns[LocalCategoryID]" cachedDataType="i4" cachedName="LocalCategoryID" lineageId="Package\DFT Load\SRT.Outputs[Sort Output].Columns[LocalCategoryID]" />
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+                <input refId="Package\DFT Load\MRGJ.Inputs[Merge Join Right Input]" hasSideEffects="true" name="Merge Join Right Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT Load\MRGJ.Inputs[Merge Join Right Input].Columns[CheckSum_OLD]" cachedDataType="i4" cachedName="CheckSum_OLD" lineageId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output].Columns[CheckSum_OLD]" />
+                    <inputColumn refId="Package\DFT Load\MRGJ.Inputs[Merge Join Right Input].Columns[DeletedFlag_OLD]" cachedDataType="ui1" cachedName="DeletedFlag_OLD" lineageId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output].Columns[DeletedFlag_OLD]" />
+                    <inputColumn refId="Package\DFT Load\MRGJ.Inputs[Merge Join Right Input].Columns[IsDefaultRowFlag]" cachedDataType="bool" cachedName="IsDefaultRowFlag" lineageId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output].Columns[IsDefaultRowFlag]" />
+                    <inputColumn refId="Package\DFT Load\MRGJ.Inputs[Merge Join Right Input].Columns[CountryID]" cachedDataType="i2" cachedName="CountryID" cachedSortKeyPosition="1" lineageId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output].Columns[CountryID]" />
+                    <inputColumn refId="Package\DFT Load\MRGJ.Inputs[Merge Join Right Input].Columns[CategoryID]" cachedDataType="i4" cachedName="CategoryID" cachedSortKeyPosition="2" lineageId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output].Columns[CategoryID]" />
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\MRGJ.Outputs[Merge Join Output]" isSorted="true" name="Merge Join Output">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CheckSum_New]" dataType="i4" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CheckSum_New]" name="CheckSum_New">
+                      <properties>
+                        <property containsID="true" dataType="System.Int32" description="The input column associated with this output column" name="InputColumnID">#{Package\DFT Load\MRGJ.Inputs[Merge Join Left Input].Columns[CheckSum_NEW]}</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CheckSum_OLD]" dataType="i4" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CheckSum_OLD]" name="CheckSum_OLD">
+                      <properties>
+                        <property containsID="true" dataType="System.Int32" description="The input column associated with this output column" name="InputColumnID">#{Package\DFT Load\MRGJ.Inputs[Merge Join Right Input].Columns[CheckSum_OLD]}</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CountryID_NEW]" dataType="i2" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CountryID_NEW]" name="CountryID_NEW" sortKeyPosition="1">
+                      <properties>
+                        <property containsID="true" dataType="System.Int32" description="The input column associated with this output column" name="InputColumnID">#{Package\DFT Load\MRGJ.Inputs[Merge Join Left Input].Columns[CountryID]}</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CategoryID_NEW]" dataType="i4" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CategoryID_NEW]" name="CategoryID_NEW" sortKeyPosition="2">
+                      <properties>
+                        <property containsID="true" dataType="System.Int32" description="The input column associated with this output column" name="InputColumnID">#{Package\DFT Load\MRGJ.Inputs[Merge Join Left Input].Columns[CategoryID]}</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[LocalCategoryID]" dataType="i4" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[LocalCategoryID]" name="LocalCategoryID">
+                      <properties>
+                        <property containsID="true" dataType="System.Int32" description="The input column associated with this output column" name="InputColumnID">#{Package\DFT Load\MRGJ.Inputs[Merge Join Left Input].Columns[LocalCategoryID]}</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CountryID_OLD]" dataType="i2" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CountryID_OLD]" name="CountryID_OLD">
+                      <properties>
+                        <property containsID="true" dataType="System.Int32" description="The input column associated with this output column" name="InputColumnID">#{Package\DFT Load\MRGJ.Inputs[Merge Join Right Input].Columns[CountryID]}</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CategoryID_OLD]" dataType="i4" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CategoryID_OLD]" name="CategoryID_OLD">
+                      <properties>
+                        <property containsID="true" dataType="System.Int32" description="The input column associated with this output column" name="InputColumnID">#{Package\DFT Load\MRGJ.Inputs[Merge Join Right Input].Columns[CategoryID]}</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[IsDefaultRowFlag]" dataType="bool" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[IsDefaultRowFlag]" name="IsDefaultRowFlag">
+                      <properties>
+                        <property containsID="true" dataType="System.Int32" description="The input column associated with this output column" name="InputColumnID">#{Package\DFT Load\MRGJ.Inputs[Merge Join Right Input].Columns[IsDefaultRowFlag]}</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[DeletedFlag]" dataType="ui1" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[DeletedFlag]" name="DeletedFlag">
+                      <properties>
+                        <property containsID="true" dataType="System.Int32" description="The input column associated with this output column" name="InputColumnID">#{Package\DFT Load\MRGJ.Inputs[Merge Join Left Input].Columns[DeletedFlag]}</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[TemplateFlag]" dataType="ui1" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[TemplateFlag]" name="TemplateFlag">
+                      <properties>
+                        <property containsID="true" dataType="System.Int32" description="The input column associated with this output column" name="InputColumnID">#{Package\DFT Load\MRGJ.Inputs[Merge Join Left Input].Columns[TemplateFlag]}</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[DeletedFlag_OLD]" dataType="ui1" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[DeletedFlag_OLD]" name="DeletedFlag_OLD">
+                      <properties>
+                        <property containsID="true" dataType="System.Int32" description="The input column associated with this output column" name="InputColumnID">#{Package\DFT Load\MRGJ.Inputs[Merge Join Right Input].Columns[DeletedFlag_OLD]}</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\RC INT Total Rows" componentClassID="Microsoft.RowCount" contactInfo="Row Count;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Counts rows passing through" name="RC INT Total Rows" usesDispositions="true">
+              <properties>
+                <property dataType="System.String" description="Variable to store the row count" name="VariableName">User::VAR_TotalRowCount</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT Load\RC INT Total Rows.Inputs[RowCountInput]" name="RowCountInput">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT Load\RC INT Total Rows.Inputs[RowCountInput].Columns[CheckSum_New]" cachedDataType="i4" cachedName="CheckSum_New" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CheckSum_New]" />
+                    <inputColumn refId="Package\DFT Load\RC INT Total Rows.Inputs[RowCountInput].Columns[CheckSum_OLD]" cachedDataType="i4" cachedName="CheckSum_OLD" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CheckSum_OLD]" />
+                    <inputColumn refId="Package\DFT Load\RC INT Total Rows.Inputs[RowCountInput].Columns[DeletedFlag]" cachedDataType="ui1" cachedName="DeletedFlag" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[DeletedFlag]" />
+                    <inputColumn refId="Package\DFT Load\RC INT Total Rows.Inputs[RowCountInput].Columns[TemplateFlag]" cachedDataType="ui1" cachedName="TemplateFlag" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[TemplateFlag]" />
+                    <inputColumn refId="Package\DFT Load\RC INT Total Rows.Inputs[RowCountInput].Columns[DeletedFlag_OLD]" cachedDataType="ui1" cachedName="DeletedFlag_OLD" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[DeletedFlag_OLD]" />
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\RC INT Total Rows.Outputs[RowCountOutput]" name="RowCountOutput" synchronousInputId="Package\DFT Load\RC INT Total Rows.Inputs[RowCountInput]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\DER_ProcessingFlags" componentClassID="Microsoft.DerivedColumn" contactInfo="Derived Column;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Updates column values using expressions" name="DER_ProcessingFlags" usesDispositions="true">
+              <inputs>
+                <input refId="Package\DFT Load\DER_ProcessingFlags.Inputs[Derived Column Input]" description="Input to the Derived Column Transformation" name="Derived Column Input">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output]" description="Default Output of the Derived Column Transformation" exclusionGroup="1" name="Derived Column Output" synchronousInputId="Package\DFT Load\DER_ProcessingFlags.Inputs[Derived Column Input]">
+                  <outputColumns>
+                    <outputColumn refId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[WorkHistoryID]" dataType="i4" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[WorkHistoryID]" name="WorkHistoryID" truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property containsID="true" dataType="System.String" description="Derived Column Expression" name="Expression">@[User::TaskWorkHistoryID]</property>
+                        <property containsID="true" dataType="System.String" description="Derived Column Friendly Expression" expressionType="Notify" name="FriendlyExpression">@[User::TaskWorkHistoryID]</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[InExistingFlag]" dataType="bool" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[InExistingFlag]" name="InExistingFlag" truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property containsID="true" dataType="System.String" description="Derived Column Expression" name="Expression">!ISNULL(CheckSum_OLD)</property>
+                        <property containsID="true" dataType="System.String" description="Derived Column Friendly Expression" expressionType="Notify" name="FriendlyExpression">!ISNULL(CheckSum_OLD)</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[InFeedFlag]" dataType="bool" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[InFeedFlag]" name="InFeedFlag" truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property containsID="true" dataType="System.String" description="Derived Column Expression" name="Expression">!ISNULL(CheckSum_New)</property>
+                        <property containsID="true" dataType="System.String" description="Derived Column Friendly Expression" expressionType="Notify" name="FriendlyExpression">!ISNULL(CheckSum_New)</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[CheckSumMatchesFlag]" dataType="bool" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[CheckSumMatchesFlag]" name="CheckSumMatchesFlag" truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property containsID="true" dataType="System.String" description="Derived Column Expression" name="Expression">CheckSum_New == CheckSum_OLD</property>
+                        <property containsID="true" dataType="System.String" description="Derived Column Friendly Expression" expressionType="Notify" name="FriendlyExpression">CheckSum_New == CheckSum_OLD</property>
+                      </properties>
+                    </outputColumn>
+                    <outputColumn refId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[AlreadyHardDeletedFlag]" dataType="bool" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" lineageId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[AlreadyHardDeletedFlag]" name="AlreadyHardDeletedFlag" truncationRowDisposition="FailComponent">
+                      <properties>
+                        <property containsID="true" dataType="System.String" description="Derived Column Expression" name="Expression">DeletedFlag_OLD == 1</property>
+                        <property containsID="true" dataType="System.String" description="Derived Column Friendly Expression" expressionType="Notify" name="FriendlyExpression">DeletedFlag_OLD == 1</property>
+                      </properties>
+                    </outputColumn>
+                  </outputColumns>
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\CSPL" componentClassID="Microsoft.ConditionalSplit" contactInfo="Conditional Split;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Evaluates and directs rows in a dataset." name="CSPL" usesDispositions="true">
+              <inputs>
+                <input refId="Package\DFT Load\CSPL.Inputs[Conditional Split Input]" description="Input to the Conditional Split Transformation" name="Conditional Split Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT Load\CSPL.Inputs[Conditional Split Input].Columns[IsDefaultRowFlag]" cachedDataType="bool" cachedName="IsDefaultRowFlag" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[IsDefaultRowFlag]" />
+                    <inputColumn refId="Package\DFT Load\CSPL.Inputs[Conditional Split Input].Columns[InExistingFlag]" cachedDataType="bool" cachedName="InExistingFlag" lineageId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[InExistingFlag]" />
+                    <inputColumn refId="Package\DFT Load\CSPL.Inputs[Conditional Split Input].Columns[InFeedFlag]" cachedDataType="bool" cachedName="InFeedFlag" lineageId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[InFeedFlag]" />
+                    <inputColumn refId="Package\DFT Load\CSPL.Inputs[Conditional Split Input].Columns[CheckSumMatchesFlag]" cachedDataType="bool" cachedName="CheckSumMatchesFlag" lineageId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[CheckSumMatchesFlag]" />
+                    <inputColumn refId="Package\DFT Load\CSPL.Inputs[Conditional Split Input].Columns[AlreadyHardDeletedFlag]" cachedDataType="bool" cachedName="AlreadyHardDeletedFlag" lineageId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[AlreadyHardDeletedFlag]" />
+                  </inputColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\CSPL.Outputs[INSERT]" description="Output 2 of the Conditional Split Transformation" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" exclusionGroup="1" name="INSERT" synchronousInputId="Package\DFT Load\CSPL.Inputs[Conditional Split Input]" truncationRowDisposition="FailComponent">
+                  <properties>
+                    <property containsID="true" dataType="System.String" description="Specifies the expression. This expression version uses lineage identifiers instead of column names." name="Expression">#{Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[InExistingFlag]} ==  FALSE </property>
+                    <property containsID="true" dataType="System.String" description="Specifies the friendly version of the expression. This expression version uses column names." expressionType="Notify" name="FriendlyExpression">InExistingFlag ==  FALSE </property>
+                    <property dataType="System.Int32" description="Specifies the position of the condition in the list of conditions that the transformation evaluates. The evaluation order is from the lowest to the highest value." name="EvaluationOrder">0</property>
+                  </properties>
+                </output>
+                <output refId="Package\DFT Load\CSPL.Outputs[NO CHANGE - Default Row]" description="Output 5 of the Conditional Split Transformation" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" exclusionGroup="1" name="NO CHANGE - Default Row" synchronousInputId="Package\DFT Load\CSPL.Inputs[Conditional Split Input]" truncationRowDisposition="FailComponent">
+                  <properties>
+                    <property containsID="true" dataType="System.String" description="Specifies the expression. This expression version uses lineage identifiers instead of column names." name="Expression">#{Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[IsDefaultRowFlag]} ==  TRUE </property>
+                    <property containsID="true" dataType="System.String" description="Specifies the friendly version of the expression. This expression version uses column names." expressionType="Notify" name="FriendlyExpression">IsDefaultRowFlag ==  TRUE </property>
+                    <property dataType="System.Int32" description="Specifies the position of the condition in the list of conditions that the transformation evaluates. The evaluation order is from the lowest to the highest value." name="EvaluationOrder">1</property>
+                  </properties>
+                </output>
+                <output refId="Package\DFT Load\CSPL.Outputs[NO CHANGE - Not arrived in Feed, already Hard Deleted or default]" description="Output 1 of the Conditional Split Transformation" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" exclusionGroup="1" name="NO CHANGE - Not arrived in Feed, already Hard Deleted or default" synchronousInputId="Package\DFT Load\CSPL.Inputs[Conditional Split Input]" truncationRowDisposition="FailComponent">
+                  <properties>
+                    <property containsID="true" dataType="System.String" description="Specifies the expression. This expression version uses lineage identifiers instead of column names." name="Expression">#{Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[InFeedFlag]} ==  FALSE  &amp;&amp; #{Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[AlreadyHardDeletedFlag]} ==  TRUE </property>
+                    <property containsID="true" dataType="System.String" description="Specifies the friendly version of the expression. This expression version uses column names." expressionType="Notify" name="FriendlyExpression">InFeedFlag ==  FALSE  &amp;&amp; AlreadyHardDeletedFlag ==  TRUE </property>
+                    <property dataType="System.Int32" description="Specifies the position of the condition in the list of conditions that the transformation evaluates. The evaluation order is from the lowest to the highest value." name="EvaluationOrder">2</property>
+                  </properties>
+                </output>
+                <output refId="Package\DFT Load\CSPL.Outputs[DELETE]" description="Output 4 of the Conditional Split Transformation" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" exclusionGroup="1" name="DELETE" synchronousInputId="Package\DFT Load\CSPL.Inputs[Conditional Split Input]" truncationRowDisposition="FailComponent">
+                  <properties>
+                    <property containsID="true" dataType="System.String" description="Specifies the expression. This expression version uses lineage identifiers instead of column names." name="Expression">#{Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[InFeedFlag]} ==  FALSE  &amp;&amp; #{Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[AlreadyHardDeletedFlag]} ==  FALSE </property>
+                    <property containsID="true" dataType="System.String" description="Specifies the friendly version of the expression. This expression version uses column names." expressionType="Notify" name="FriendlyExpression">InFeedFlag ==  FALSE  &amp;&amp; AlreadyHardDeletedFlag ==  FALSE </property>
+                    <property dataType="System.Int32" description="Specifies the position of the condition in the list of conditions that the transformation evaluates. The evaluation order is from the lowest to the highest value." name="EvaluationOrder">3</property>
+                  </properties>
+                </output>
+                <output refId="Package\DFT Load\CSPL.Outputs[UPDATE]" description="Output 3 of the Conditional Split Transformation" errorOrTruncationOperation="Computation" errorRowDisposition="FailComponent" exclusionGroup="1" name="UPDATE" synchronousInputId="Package\DFT Load\CSPL.Inputs[Conditional Split Input]" truncationRowDisposition="FailComponent">
+                  <properties>
+                    <property containsID="true" dataType="System.String" description="Specifies the expression. This expression version uses lineage identifiers instead of column names." name="Expression">#{Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[CheckSumMatchesFlag]} ==  FALSE </property>
+                    <property containsID="true" dataType="System.String" description="Specifies the friendly version of the expression. This expression version uses column names." expressionType="Notify" name="FriendlyExpression">CheckSumMatchesFlag ==  FALSE </property>
+                    <property dataType="System.Int32" description="Specifies the position of the condition in the list of conditions that the transformation evaluates. The evaluation order is from the lowest to the highest value." name="EvaluationOrder">4</property>
+                  </properties>
+                </output>
+                <output refId="Package\DFT Load\CSPL.Outputs[NO CHANGE - Arrived, exists, is not default, and matches]" description="Default Output of the Conditional Split Transformation" exclusionGroup="1" name="NO CHANGE - Arrived, exists, is not default, and matches" synchronousInputId="Package\DFT Load\CSPL.Inputs[Conditional Split Input]">
+                  <properties>
+                    <property dataType="System.Boolean" name="IsDefaultOut">true</property>
+                  </properties>
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\RC Insert" componentClassID="Microsoft.RowCount" contactInfo="Row Count;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Counts rows passing through" name="RC Insert" usesDispositions="true">
+              <properties>
+                <property dataType="System.String" description="Variable to store the row count" name="VariableName">User::VAR_InsertRowCount</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT Load\RC Insert.Inputs[RowCountInput]" name="RowCountInput">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\RC Insert.Outputs[RowCountOutput]" name="RowCountOutput" synchronousInputId="Package\DFT Load\RC Insert.Inputs[RowCountInput]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\RC Update" componentClassID="Microsoft.RowCount" contactInfo="Row Count;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Counts rows passing through" name="RC Update" usesDispositions="true">
+              <properties>
+                <property dataType="System.String" description="Variable to store the row count" name="VariableName">User::VAR_UpdateRowCount</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT Load\RC Update.Inputs[RowCountInput]" name="RowCountInput">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\RC Update.Outputs[RowCountOutput]" name="RowCountOutput" synchronousInputId="Package\DFT Load\RC Update.Inputs[RowCountInput]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\CMD_SP" componentClassID="Microsoft.OLEDBCommand" contactInfo="OLE DB Command;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;2" description="Executes an SQL command for each row in a dataset." name="CMD_SP" usesDispositions="true" version="2">
+              <properties>
+                <property dataType="System.Int32" description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out." name="CommandTimeout">0</property>
+                <property dataType="System.String" description="The SQL command to be executed." expressionType="Notify" name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">EXEC [dbo].[sp_GenericUpdate] ?,?,?,?,?,?,?</property>
+                <property dataType="System.Int32" description="Specifies the column code page to use when code page information is unavailable from the data source." name="DefaultCodePage">1252</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT Load\CMD_SP.Connections[OleDbConnection]" connectionManagerID="Package.ConnectionManagers[DBX_Output]" connectionManagerRefId="Package.ConnectionManagers[DBX_Output]" description="The OLE DB runtime connection used to access the database." name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input refId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input]" errorOrTruncationOperation="Command Execution" errorRowDisposition="FailComponent" hasSideEffects="true" name="OLE DB Command Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].Columns[WorkHistoryID]" cachedDataType="i4" cachedName="WorkHistoryID" externalMetadataColumnId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].ExternalColumns[@piWorkHistoryID]" lineageId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[WorkHistoryID]" />
+                    <inputColumn refId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].Columns[DeletedFlag]" cachedDataType="ui1" cachedName="DeletedFlag" externalMetadataColumnId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].ExternalColumns[@piDeletedFlag]" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[DeletedFlag]" />
+                    <inputColumn refId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].Columns[TemplateFlag]" cachedDataType="ui1" cachedName="TemplateFlag" externalMetadataColumnId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].ExternalColumns[@piTemplateFlag]" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[TemplateFlag]" />
+                    <inputColumn refId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].Columns[CountryID_OLD]" cachedDataType="i2" cachedName="CountryID_OLD" externalMetadataColumnId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].ExternalColumns[@piCountryID]" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CountryID_OLD]" />
+                    <inputColumn refId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].Columns[CategoryID_OLD]" cachedDataType="i4" cachedName="CategoryID_OLD" externalMetadataColumnId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].ExternalColumns[@piCategoryID]" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CategoryID_OLD]" />
+                    <inputColumn refId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].Columns[LocalCategoryID]" cachedDataType="i4" cachedName="LocalCategoryID" externalMetadataColumnId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].ExternalColumns[@piLocalCategoryID]" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[LocalCategoryID]" />
+                    <inputColumn refId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].Columns[CheckSum_New]" cachedDataType="i4" cachedName="CheckSum_New" externalMetadataColumnId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].ExternalColumns[@piCheckSum_New]" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CheckSum_New]" />
+                  </inputColumns>
+                  <externalMetadataColumns isUsed="True">
+                    <externalMetadataColumn refId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].ExternalColumns[@piWorkHistoryID]" dataType="i4" name="@piWorkHistoryID">
+                      <properties>
+                        <property dataType="System.Int32" description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values." name="DBParamInfoFlags">81</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn refId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].ExternalColumns[@piDeletedFlag]" dataType="ui1" name="@piDeletedFlag">
+                      <properties>
+                        <property dataType="System.Int32" description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values." name="DBParamInfoFlags">81</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn refId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].ExternalColumns[@piTemplateFlag]" dataType="ui1" name="@piTemplateFlag">
+                      <properties>
+                        <property dataType="System.Int32" description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values." name="DBParamInfoFlags">81</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn refId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].ExternalColumns[@piCountryID]" dataType="i4" name="@piCountryID">
+                      <properties>
+                        <property dataType="System.Int32" description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values." name="DBParamInfoFlags">81</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn refId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].ExternalColumns[@piCategoryID]" dataType="i4" name="@piCategoryID">
+                      <properties>
+                        <property dataType="System.Int32" description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values." name="DBParamInfoFlags">81</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn refId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].ExternalColumns[@piLocalCategoryID]" dataType="i4" name="@piLocalCategoryID">
+                      <properties>
+                        <property dataType="System.Int32" description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values." name="DBParamInfoFlags">81</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn refId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input].ExternalColumns[@piCheckSum_New]" dataType="i4" name="@piCheckSum_New">
+                      <properties>
+                        <property dataType="System.Int32" description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values." name="DBParamInfoFlags">81</property>
+                      </properties>
+                    </externalMetadataColumn>
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\CMD_SP.Outputs[OLE DB Command Output]" exclusionGroup="1" name="OLE DB Command Output" synchronousInputId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\RC Delete" componentClassID="Microsoft.RowCount" contactInfo="Row Count;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Counts rows passing through" name="RC Delete" usesDispositions="true">
+              <properties>
+                <property dataType="System.String" description="Variable to store the row count" name="VariableName">User::VAR_DeleteRowCount</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT Load\RC Delete.Inputs[RowCountInput]" name="RowCountInput">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\RC Delete.Outputs[RowCountOutput]" name="RowCountOutput" synchronousInputId="Package\DFT Load\RC Delete.Inputs[RowCountInput]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\CMD_Delete" componentClassID="Microsoft.OLEDBCommand" contactInfo="OLE DB Command;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;2" description="Executes an SQL command for each row in a dataset." name="CMD_Delete" usesDispositions="true" version="2">
+              <properties>
+                <property dataType="System.Int32" description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out." name="CommandTimeout">0</property>
+                <property dataType="System.String" description="The SQL command to be executed." expressionType="Notify" name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">EXEC [dbo].[sp_GenericHardDelete] ?, ?, ?</property>
+                <property dataType="System.Int32" description="Specifies the column code page to use when code page information is unavailable from the data source." name="DefaultCodePage">1252</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT Load\CMD_Delete.Connections[OleDbConnection]" connectionManagerID="Package.ConnectionManagers[DBX_Output]" connectionManagerRefId="Package.ConnectionManagers[DBX_Output]" description="The OLE DB runtime connection used to access the database." name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input refId="Package\DFT Load\CMD_Delete.Inputs[OLE DB Command Input]" errorOrTruncationOperation="Command Execution" errorRowDisposition="FailComponent" hasSideEffects="true" name="OLE DB Command Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT Load\CMD_Delete.Inputs[OLE DB Command Input].Columns[WorkHistoryID]" cachedDataType="i4" cachedName="WorkHistoryID" externalMetadataColumnId="Package\DFT Load\CMD_Delete.Inputs[OLE DB Command Input].ExternalColumns[@piWorkHistoryID]" lineageId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[WorkHistoryID]" />
+                    <inputColumn refId="Package\DFT Load\CMD_Delete.Inputs[OLE DB Command Input].Columns[CountryID_OLD]" cachedDataType="i2" cachedName="CountryID_OLD" externalMetadataColumnId="Package\DFT Load\CMD_Delete.Inputs[OLE DB Command Input].ExternalColumns[@piCountryID]" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CountryID_OLD]" />
+                    <inputColumn refId="Package\DFT Load\CMD_Delete.Inputs[OLE DB Command Input].Columns[CategoryID_OLD]" cachedDataType="i4" cachedName="CategoryID_OLD" externalMetadataColumnId="Package\DFT Load\CMD_Delete.Inputs[OLE DB Command Input].ExternalColumns[@piCategoryID]" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CategoryID_OLD]" />
+                  </inputColumns>
+                  <externalMetadataColumns isUsed="True">
+                    <externalMetadataColumn refId="Package\DFT Load\CMD_Delete.Inputs[OLE DB Command Input].ExternalColumns[@piWorkHistoryID]" dataType="i4" name="@piWorkHistoryID">
+                      <properties>
+                        <property dataType="System.Int32" description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values." name="DBParamInfoFlags">81</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn refId="Package\DFT Load\CMD_Delete.Inputs[OLE DB Command Input].ExternalColumns[@piCountryID]" dataType="i4" name="@piCountryID">
+                      <properties>
+                        <property dataType="System.Int32" description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values." name="DBParamInfoFlags">81</property>
+                      </properties>
+                    </externalMetadataColumn>
+                    <externalMetadataColumn refId="Package\DFT Load\CMD_Delete.Inputs[OLE DB Command Input].ExternalColumns[@piCategoryID]" dataType="i4" name="@piCategoryID">
+                      <properties>
+                        <property dataType="System.Int32" description="Parameter information.  Matches OLE DB's DBPARAMFLAGSENUM values." name="DBParamInfoFlags">81</property>
+                      </properties>
+                    </externalMetadataColumn>
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\CMD_Delete.Outputs[OLE DB Command Output]" exclusionGroup="1" name="OLE DB Command Output" synchronousInputId="Package\DFT Load\CMD_Delete.Inputs[OLE DB Command Input]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\RC INT Arrived but Unchanged" componentClassID="Microsoft.RowCount" contactInfo="Row Count;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Counts rows passing through" name="RC INT Arrived but Unchanged" usesDispositions="true">
+              <properties>
+                <property dataType="System.String" description="Variable to store the row count" name="VariableName">User::VAR_IntermediateRowCount</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT Load\RC INT Arrived but Unchanged.Inputs[RowCountInput]" name="RowCountInput">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\RC INT Arrived but Unchanged.Outputs[RowCountOutput]" name="RowCountOutput" synchronousInputId="Package\DFT Load\RC INT Arrived but Unchanged.Inputs[RowCountInput]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\RC INT Default row" componentClassID="Microsoft.RowCount" contactInfo="Row Count;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Counts rows passing through" name="RC INT Default row" usesDispositions="true">
+              <properties>
+                <property dataType="System.String" description="Variable to store the row count" name="VariableName">User::VAR_DefaultRowCount</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT Load\RC INT Default row.Inputs[RowCountInput]" name="RowCountInput">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\RC INT Default row.Outputs[RowCountOutput]" name="RowCountOutput" synchronousInputId="Package\DFT Load\RC INT Default row.Inputs[RowCountInput]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\TD Arrived but Unchanged" componentClassID="Microsoft.RowCount" contactInfo="Row Count;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Counts rows passing through" name="TD Arrived but Unchanged" usesDispositions="true">
+              <properties>
+                <property dataType="System.String" description="Variable to store the row count" name="VariableName">User::VAR_TrashArrivedUnchanged</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT Load\TD Arrived but Unchanged.Inputs[RowCountInput]" name="RowCountInput">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT Load\TD Arrived but Unchanged.Inputs[RowCountInput].Columns[CountryID_NEW]" cachedDataType="i2" cachedName="CountryID_NEW" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CountryID_NEW]" />
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\TD Arrived but Unchanged.Outputs[RowCountOutput]" name="RowCountOutput" synchronousInputId="Package\DFT Load\TD Arrived but Unchanged.Inputs[RowCountInput]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\TD Default Row" componentClassID="Microsoft.RowCount" contactInfo="Row Count;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Counts rows passing through" name="TD Default Row" usesDispositions="true">
+              <properties>
+                <property dataType="System.String" description="Variable to store the row count" name="VariableName">User::VAR_TrashDefaultRow</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT Load\TD Default Row.Inputs[RowCountInput]" name="RowCountInput">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT Load\TD Default Row.Inputs[RowCountInput].Columns[CountryID_NEW]" cachedDataType="i2" cachedName="CountryID_NEW" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CountryID_NEW]" />
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\TD Default Row.Outputs[RowCountOutput]" name="RowCountOutput" synchronousInputId="Package\DFT Load\TD Default Row.Inputs[RowCountInput]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\RC Intermediate" componentClassID="Microsoft.RowCount" contactInfo="Row Count;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Counts rows passing through" name="RC Intermediate" usesDispositions="true">
+              <properties>
+                <property dataType="System.String" description="Variable to store the row count" name="VariableName">User::VAR_IntermediateRowCount</property>
+              </properties>
+              <inputs>
+                <input refId="Package\DFT Load\RC Intermediate.Inputs[RowCountInput]" name="RowCountInput">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output refId="Package\DFT Load\RC Intermediate.Outputs[RowCountOutput]" name="RowCountOutput" synchronousInputId="Package\DFT Load\RC Intermediate.Inputs[RowCountInput]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component refId="Package\DFT Load\OLE_DST" componentClassID="Microsoft.OLEDBDestination" contactInfo="OLE DB Destination;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4" description="OLE DB Destination" name="OLE_DST" usesDispositions="true" version="4">
+              <properties>
+                <property dataType="System.String" description="Specifies the name of the database object used to open a rowset." name="OpenRowset">[dbo].[DST_GenericTable]</property>
+                <property dataType="System.Int32" description="Specifies the mode used to access the database." name="AccessMode" typeConverter="AccessMode">3</property>
+              </properties>
+              <connections>
+                <connection refId="Package\DFT Load\OLE_DST.Connections[OleDbConnection]" connectionManagerID="Package.ConnectionManagers[DBX_Output]" connectionManagerRefId="Package.ConnectionManagers[DBX_Output]" description="The OLE DB runtime connection used to access the database." name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input refId="Package\DFT Load\OLE_DST.Inputs[OLE DB Destination Input]" errorOrTruncationOperation="Insert" errorRowDisposition="FailComponent" hasSideEffects="true" name="OLE DB Destination Input">
+                  <inputColumns>
+                    <inputColumn refId="Package\DFT Load\OLE_DST.Inputs[OLE DB Destination Input].Columns[CountryID_NEW]" cachedDataType="i2" cachedName="CountryID_NEW" externalMetadataColumnId="Package\DFT Load\OLE_DST.Inputs[OLE DB Destination Input].ExternalColumns[CountryID]" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CountryID_NEW]" />
+                    <inputColumn refId="Package\DFT Load\OLE_DST.Inputs[OLE DB Destination Input].Columns[CategoryID_NEW]" cachedDataType="i4" cachedName="CategoryID_NEW" externalMetadataColumnId="Package\DFT Load\OLE_DST.Inputs[OLE DB Destination Input].ExternalColumns[CategoryID]" lineageId="Package\DFT Load\MRGJ.Outputs[Merge Join Output].Columns[CategoryID_NEW]" />
+                  </inputColumns>
+                  <externalMetadataColumns isUsed="True">
+                    <externalMetadataColumn refId="Package\DFT Load\OLE_DST.Inputs[OLE DB Destination Input].ExternalColumns[CountryID]" dataType="i2" name="CountryID" />
+                    <externalMetadataColumn refId="Package\DFT Load\OLE_DST.Inputs[OLE DB Destination Input].ExternalColumns[CategoryID]" dataType="i4" name="CategoryID" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+            </component>
+          </components>
+          <paths>
+            <path refId="Package\DFT Load.Paths[OLE DB Source Output]" endId="Package\DFT Load\RC Select.Inputs[RowCountInput]" name="OLE DB Source Output" startId="Package\DFT Load\OLE_SRC.Outputs[OLE DB Source Output]" />
+            <path refId="Package\DFT Load.Paths[RowCountOutput]" endId="Package\DFT Load\LKP_1.Inputs[Lookup Input]" name="RowCountOutput" startId="Package\DFT Load\RC Select.Outputs[RowCountOutput]" />
+            <path refId="Package\DFT Load.Paths[OLE DB Source Output Existing]" endId="Package\DFT Load\RC Select Existing.Inputs[RowCountInput]" name="OLE DB Source Output Existing" startId="Package\DFT Load\OLE_SRC_Existing.Outputs[OLE DB Source Output]" />
+            <path refId="Package\DFT Load.Paths[RowCountOutput Existing]" endId="Package\DFT Load\MRGJ.Inputs[Merge Join Right Input]" name="RowCountOutput Existing" startId="Package\DFT Load\RC Select Existing.Outputs[RowCountOutput]" />
+            <path refId="Package\DFT Load.Paths[Lookup Output]" endId="Package\DFT Load\LKP_2.Inputs[Lookup Input]" name="Lookup Output" startId="Package\DFT Load\LKP_1.Outputs[Lookup Match Output]" />
+            <path refId="Package\DFT Load.Paths[Lookup Output1]" endId="Package\DFT Load\LKP_3.Inputs[Lookup Input]" name="Lookup Output1" startId="Package\DFT Load\LKP_2.Outputs[Lookup Match Output]" />
+            <path refId="Package\DFT Load.Paths[Lookup Output2]" endId="Package\DFT Load\SRT.Inputs[Sort Input]" name="Lookup Output2" startId="Package\DFT Load\LKP_3.Outputs[Lookup Match Output]" />
+            <path refId="Package\DFT Load.Paths[Sort Output]" endId="Package\DFT Load\DER.Inputs[Derived Column Input]" name="Sort Output" startId="Package\DFT Load\SRT.Outputs[Sort Output]" />
+            <path refId="Package\DFT Load.Paths[Derived Column Output]" endId="Package\DFT Load\CHK.Inputs[Derived Column Input]" name="Derived Column Output" startId="Package\DFT Load\DER.Outputs[Derived Column Output]" />
+            <path refId="Package\DFT Load.Paths[ChecksumOutput]" endId="Package\DFT Load\DER_DefaultFlags.Inputs[Derived Column Input]" name="ChecksumOutput" startId="Package\DFT Load\CHK.Outputs[Derived Column Output]" />
+            <path refId="Package\DFT Load.Paths[Derived Column Output DefaultFlags]" endId="Package\DFT Load\MRGJ.Inputs[Merge Join Left Input]" name="Derived Column Output DefaultFlags" startId="Package\DFT Load\DER_DefaultFlags.Outputs[Derived Column Output]" />
+            <path refId="Package\DFT Load.Paths[Merge Join Output]" endId="Package\DFT Load\RC INT Total Rows.Inputs[RowCountInput]" name="Merge Join Output" startId="Package\DFT Load\MRGJ.Outputs[Merge Join Output]" />
+            <path refId="Package\DFT Load.Paths[RowCountOutput Total Rows]" endId="Package\DFT Load\DER_NullableColumns.Inputs[Derived Column Input]" name="RowCountOutput Total Rows" startId="Package\DFT Load\RC INT Total Rows.Outputs[RowCountOutput]" />
+            <path refId="Package\DFT Load.Paths[Derived Column Output Nullable]" endId="Package\DFT Load\DER_ProcessingFlags.Inputs[Derived Column Input]" name="Derived Column Output Nullable" startId="Package\DFT Load\DER_NullableColumns.Outputs[Derived Column Output]" />
+            <path refId="Package\DFT Load.Paths[Derived Column Output ProcessingFlags]" endId="Package\DFT Load\CSPL.Inputs[Conditional Split Input]" name="Derived Column Output ProcessingFlags" startId="Package\DFT Load\DER_ProcessingFlags.Outputs[Derived Column Output]" />
+            <path refId="Package\DFT Load.Paths[INSERT]" endId="Package\DFT Load\RC Insert.Inputs[RowCountInput]" name="INSERT" startId="Package\DFT Load\CSPL.Outputs[INSERT]" />
+            <path refId="Package\DFT Load.Paths[UPDATE]" endId="Package\DFT Load\RC Update.Inputs[RowCountInput]" name="UPDATE" startId="Package\DFT Load\CSPL.Outputs[UPDATE]" />
+            <path refId="Package\DFT Load.Paths[RowCountOutput2]" endId="Package\DFT Load\CMD_SP.Inputs[OLE DB Command Input]" name="RowCountOutput2" startId="Package\DFT Load\RC Update.Outputs[RowCountOutput]" />
+            <path refId="Package\DFT Load.Paths[DELETE]" endId="Package\DFT Load\RC Delete.Inputs[RowCountInput]" name="DELETE" startId="Package\DFT Load\CSPL.Outputs[DELETE]" />
+            <path refId="Package\DFT Load.Paths[NO CHANGE - Arrived, exists, is not default, and matches]" endId="Package\DFT Load\RC INT Arrived but Unchanged.Inputs[RowCountInput]" name="NO CHANGE - Arrived, exists, is not default, and matches" startId="Package\DFT Load\CSPL.Outputs[NO CHANGE - Arrived, exists, is not default, and matches]" />
+            <path refId="Package\DFT Load.Paths[RowCountOutput Arrived but Unchanged]" endId="Package\DFT Load\TD Arrived but Unchanged.Inputs[RowCountInput]" name="RowCountOutput Arrived but Unchanged" startId="Package\DFT Load\RC INT Arrived but Unchanged.Outputs[RowCountOutput]" />
+            <path refId="Package\DFT Load.Paths[NO CHANGE - Default Row]" endId="Package\DFT Load\RC INT Default row.Inputs[RowCountInput]" name="NO CHANGE - Default Row" startId="Package\DFT Load\CSPL.Outputs[NO CHANGE - Default Row]" />
+            <path refId="Package\DFT Load.Paths[RowCountOutput Default row]" endId="Package\DFT Load\TD Default Row.Inputs[RowCountInput]" name="RowCountOutput Default row" startId="Package\DFT Load\RC INT Default row.Outputs[RowCountOutput]" />
+            <path refId="Package\DFT Load.Paths[RowCountOutput Delete]" endId="Package\DFT Load\CMD_Delete.Inputs[OLE DB Command Input]" name="RowCountOutput Delete" startId="Package\DFT Load\RC Delete.Outputs[RowCountOutput]" />
+            <path refId="Package\DFT Load.Paths[RowCountOutput3]" endId="Package\DFT Load\RC Intermediate.Inputs[RowCountInput]" name="RowCountOutput3" startId="Package\DFT Load\CMD_Delete.Outputs[OLE DB Command Output]" />
+            <path refId="Package\DFT Load.Paths[RowCountOutput4]" endId="Package\DFT Load\OLE_DST.Inputs[OLE DB Destination Input]" name="RowCountOutput4" startId="Package\DFT Load\RC Insert.Outputs[RowCountOutput]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable DTS:refId="Package\SQL Set TaskWorkHistoryID" DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{D3E4F5A6-B7C8-4789-D234-E56789012345}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="SQL Set TaskWorkHistoryID" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server v9; © 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1" DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData SQLTask:Connection="{C1D2E3F4-A5B6-4789-C012-D3456789EF01}" SQLTask:SqlStatementSource="EXEC [dbo].[sp_GenericGetWorkHistoryID] ?, ?, ? OUTPUT" SQLTask:ResultType="ResultSetType_None"
+          xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask">
+          <SQLTask:ParameterBinding SQLTask:ParameterName="0" SQLTask:DtsVariableName="System::SourceID" SQLTask:ParameterDirection="Input" SQLTask:DataType="129" SQLTask:ParameterSize="-1" />
+          <SQLTask:ParameterBinding SQLTask:ParameterName="1" SQLTask:DtsVariableName="System::ExecutionInstanceGUID" SQLTask:ParameterDirection="Input" SQLTask:DataType="129" SQLTask:ParameterSize="-1" />
+          <SQLTask:ParameterBinding SQLTask:ParameterName="2" SQLTask:DtsVariableName="User::TaskWorkHistoryID" SQLTask:ParameterDirection="Output" SQLTask:DataType="3" SQLTask:ParameterSize="-1" />
+        </SQLTask:SqlTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint DTS:refId="Package.PrecedenceConstraints[Constraint]" DTS:CreationName="" DTS:DTSID="{F2A3B4C5-D6E7-4789-F234-A56789012345}" DTS:EvalOp="3" DTS:Expression="@[User::SourceRowCount] &gt; 0" DTS:From="Package\SQL Check Regulatory RowCount" DTS:LogicalAnd="True" DTS:ObjectName="Constraint" DTS:To="Package\DFT Load" />
+    <DTS:PrecedenceConstraint DTS:refId="Package.PrecedenceConstraints[Constraint2]" DTS:CreationName="" DTS:DTSID="{E4F5A6B7-C8D9-4789-E234-F56789012345}" DTS:EvalOp="2" DTS:From="Package\DFT Load" DTS:LogicalAnd="True" DTS:ObjectName="Constraint2" DTS:To="Package\SQL Set TaskWorkHistoryID" />
+  </DTS:PrecedenceConstraints>
+  <DTS:EventHandlers />
+</DTS:Executable>
+

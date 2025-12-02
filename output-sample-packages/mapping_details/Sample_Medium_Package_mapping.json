@@ -1,0 +1,1048 @@
+{
+  "package_name": "Sample Medium Package",
+  "mapped_connections": [
+    {
+      "id": "Package.ConnectionManagers[SRC_OLEDB]",
+      "name": "SRC_OLEDB",
+      "type": "SQL_DATABASE",
+      "details": {
+        "server": "localhost",
+        "database": "SRC_Database",
+        "provider": "SQLNCLI11.1"
+      },
+      "pyspark_reader": "spark.read.format(\"jdbc\")",
+      "pyspark_writer": "df.write.format(\"jdbc\")",
+      "options_template": {
+        "url": "jdbc:sqlserver://{server}:{port};databaseName={database}",
+        "driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+        "user": "username",
+        "password": "password"
+      },
+      "mapped": true
+    },
+    {
+      "id": "Package.ConnectionManagers[LKP_OLEDB]",
+      "name": "LKP_OLEDB",
+      "type": "SQL_DATABASE",
+      "details": {
+        "server": "localhost",
+        "database": "LKP_Database",
+        "provider": "SQLNCLI11.1"
+      },
+      "pyspark_reader": "spark.read.format(\"jdbc\")",
+      "pyspark_writer": "df.write.format(\"jdbc\")",
+      "options_template": {
+        "url": "jdbc:sqlserver://{server}:{port};databaseName={database}",
+        "driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+        "user": "username",
+        "password": "password"
+      },
+      "mapped": true
+    },
+    {
+      "id": "Package.ConnectionManagers[DBX_Output]",
+      "name": "DBX_Output",
+      "type": "SQL_DATABASE",
+      "details": {
+        "server": "localhost",
+        "database": "DST_Database",
+        "provider": "SQLNCLI11.1"
+      },
+      "pyspark_reader": "spark.read.format(\"jdbc\")",
+      "pyspark_writer": "df.write.format(\"jdbc\")",
+      "options_template": {
+        "url": "jdbc:sqlserver://{server}:{port};databaseName={database}",
+        "driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+        "user": "username",
+        "password": "password"
+      },
+      "mapped": true
+    }
+  ],
+  "mapped_sql_tasks": [
+    {
+      "task_id": "{A2B3C4D5-E6F7-4789-A123-B45678901234}",
+      "name": "SQL Check Regulatory RowCount",
+      "purpose": "SELECT_DATA",
+      "sql_statement": "SELECT COUNT(*) AS SourceRowCount\nFROM [dbo].[SRC_InputTable]",
+      "pyspark_function": "spark.sql",
+      "code_template": "\n# Select Data: {task_name}\n{df_name} = spark.sql(\"\"\"\n{sql_statement}\n\"\"\")\n",
+      "mapped": true
+    },
+    {
+      "task_id": "{D3E4F5A6-B7C8-4789-D234-E56789012345}",
+      "name": "SQL Set TaskWorkHistoryID",
+      "purpose": "EXECUTE_PROCEDURE",
+      "sql_statement": "EXEC [dbo].[sp_GenericGetWorkHistoryID] ?, ?, ? OUTPUT",
+      "pyspark_function": "spark.sql",
+      "code_template": "\n# SQL Task: {task_name}\nspark.sql(\"\"\"\n{sql_statement}\n\"\"\")\n",
+      "mapped": false
+    }
+  ],
+  "mapped_data_flows": [
+    {
+      "task_id": "{B2C3D4E5-F6A7-4789-B123-C45678901234}",
+      "name": "DFT Load",
+      "sources": [
+        {
+          "name": "OLE_SRC",
+          "type": "OTHER",
+          "table_name": "SELECT\n  [CategoryCode],\n  [CountryCode],\n  [Status]\nFROM\n  [dbo].[SRC_InputTable]",
+          "pyspark_function": "spark.read.format(\"jdbc\")",
+          "code_template": "\n# Read from source: {source_name}\n# Table: {table_name}\n{df_name} = spark.read \\\n    .format(\"jdbc\") \\\n    .option(\"url\", \"{jdbc_url}\") \\\n    .option(\"dbtable\", \"{table_name}\") \\\n    .option(\"user\", \"{username}\") \\\n    .option(\"password\", \"{password}\") \\\n    .option(\"driver\", \"com.microsoft.sqlserver.jdbc.SQLServerDriver\") \\\n    .load()\n",
+          "requires_custom": false,
+          "mapped": true,
+          "connection": {
+            "name": "SRC_OLEDB",
+            "id": "Package.ConnectionManagers[SRC_OLEDB]"
+          },
+          "is_sql_query": true,
+          "sql_query": "SELECT\n  [CategoryCode],\n  [CountryCode],\n  [Status]\nFROM\n  [dbo].[SRC_InputTable]",
+          "access_mode": "2",
+          "component_id": "Package\\DFT Load\\OLE_SRC"
+        },
+        {
+          "name": "OLE_SRC_Existing",
+          "type": "OTHER",
+          "table_name": "SELECT\n  [CountryID],\n  [CategoryID],\n  CASE WHEN [CountryID] IN (-1, -2) THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS [IsDefaultRowFlag],\n  [ETLCheckSum] AS [CheckSum_OLD],\n  [DeletedFlag] AS [DeletedFlag_OLD]\nFROM\n  [dbo].[DST_GenericTable]\nORDER BY\n  [CountryID],\n  [CategoryID]",
+          "pyspark_function": "spark.read.format(\"jdbc\")",
+          "code_template": "\n# Read from source: {source_name}\n# Table: {table_name}\n{df_name} = spark.read \\\n    .format(\"jdbc\") \\\n    .option(\"url\", \"{jdbc_url}\") \\\n    .option(\"dbtable\", \"{table_name}\") \\\n    .option(\"user\", \"{username}\") \\\n    .option(\"password\", \"{password}\") \\\n    .option(\"driver\", \"com.microsoft.sqlserver.jdbc.SQLServerDriver\") \\\n    .load()\n",
+          "requires_custom": false,
+          "mapped": true,
+          "connection": {
+            "name": "DBX_Output",
+            "id": "Package.ConnectionManagers[DBX_Output]"
+          },
+          "is_sql_query": true,
+          "sql_query": "SELECT\n  [CountryID],\n  [CategoryID],\n  CASE WHEN [CountryID] IN (-1, -2) THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS [IsDefaultRowFlag],\n  [ETLCheckSum] AS [CheckSum_OLD],\n  [DeletedFlag] AS [DeletedFlag_OLD]\nFROM\n  [dbo].[DST_GenericTable]\nORDER BY\n  [CountryID],\n  [CategoryID]",
+          "access_mode": "2",
+          "component_id": "Package\\DFT Load\\OLE_SRC_Existing"
+        }
+      ],
+      "transformations": [
+        {
+          "name": "RC Select",
+          "type": "ROW_COUNT",
+          "logic": "Transformation type: ROW_COUNT",
+          "pyspark_function": "df.count",
+          "code_template": "\n# Row Count: {trans_name}\n{count_var} = {input_df}.count()\nprint(f\"Row count for {trans_name}: {{count_var}}\")\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\RC Select",
+          "component_class": "Microsoft.RowCount",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "RowCountOutput",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "LKP_1",
+          "type": "LOOKUP",
+          "logic": {
+            "lookup_query": "SELECT\n  [LocalCategoryID],\n  [CategoryDescription]\nFROM\n  [dbo].[LKP_LocalCategoryTable]",
+            "cache_type": "0",
+            "connection_type": "0",
+            "no_match_behavior": "0",
+            "column_mappings": [
+              {
+                "input_column": "CategoryDescription",
+                "join_to_reference_column": "CategoryDescription",
+                "copy_from_reference_column": null
+              },
+              {
+                "input_column": "",
+                "join_to_reference_column": null,
+                "copy_from_reference_column": "LocalCategoryID",
+                "output_column": "LocalCategoryID"
+              }
+            ]
+          },
+          "pyspark_function": "df.join",
+          "code_template": "\n# Lookup: {trans_name}\n# Join {input_df} with {lookup_df}\n{output_df} = {input_df}.join(\n    {lookup_df},\n    {join_condition},\n    \"left\"  # Left outer join for LOOKUP\n)\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\LKP_1",
+          "component_class": "Microsoft.Lookup",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "Lookup Match Output",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "LKP_2",
+          "type": "LOOKUP",
+          "logic": {
+            "lookup_query": "SELECT\n  [CategoryID],\n  [CategoryCode]\nFROM\n  [dbo].[LKP_CategoryTable]",
+            "cache_type": "0",
+            "connection_type": "0",
+            "no_match_behavior": "0",
+            "column_mappings": [
+              {
+                "input_column": "CategoryCode",
+                "join_to_reference_column": "CategoryCode",
+                "copy_from_reference_column": null
+              },
+              {
+                "input_column": "",
+                "join_to_reference_column": null,
+                "copy_from_reference_column": "CategoryID",
+                "output_column": "CategoryID"
+              }
+            ]
+          },
+          "pyspark_function": "df.join",
+          "code_template": "\n# Lookup: {trans_name}\n# Join {input_df} with {lookup_df}\n{output_df} = {input_df}.join(\n    {lookup_df},\n    {join_condition},\n    \"left\"  # Left outer join for LOOKUP\n)\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\LKP_2",
+          "component_class": "Microsoft.Lookup",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "Lookup Match Output",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "LKP_3",
+          "type": "LOOKUP",
+          "logic": {
+            "lookup_query": "SELECT\n  [CountryID],\n  [CountryCode]\nFROM\n  [dbo].[LKP_CountryTable]",
+            "cache_type": "0",
+            "connection_type": "0",
+            "no_match_behavior": "0",
+            "column_mappings": [
+              {
+                "input_column": "CountryCode",
+                "join_to_reference_column": "CountryCode",
+                "copy_from_reference_column": null
+              },
+              {
+                "input_column": "",
+                "join_to_reference_column": null,
+                "copy_from_reference_column": "CountryID",
+                "output_column": "CountryID"
+              }
+            ]
+          },
+          "pyspark_function": "df.join",
+          "code_template": "\n# Lookup: {trans_name}\n# Join {input_df} with {lookup_df}\n{output_df} = {input_df}.join(\n    {lookup_df},\n    {join_condition},\n    \"left\"  # Left outer join for LOOKUP\n)\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\LKP_3",
+          "component_class": "Microsoft.Lookup",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "Lookup Match Output",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "SRT",
+          "type": "SORT",
+          "logic": "Transformation type: SORT",
+          "pyspark_function": "df.orderBy",
+          "code_template": "\n# Sort: {trans_name}\n{output_df} = {input_df}.orderBy(\n    {sort_cols}\n)\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\SRT",
+          "component_class": "Microsoft.Sort",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "Sort Output",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "DER",
+          "type": "DERIVED_COLUMN",
+          "logic": "ProcessFlag = 1 == 1",
+          "pyspark_function": "df.withColumn",
+          "code_template": "\n# Derived Column: {trans_name}\n{output_df} = {input_df}\n{column_additions}\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\DER",
+          "component_class": "Microsoft.DerivedColumn",
+          "expressions": [
+            {
+              "name": "Expression",
+              "value": "1 == 1"
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "1 == 1"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "Derived Column Output",
+              "description": "Default Output of the Derived Column Transformation"
+            }
+          ]
+        },
+        {
+          "name": "RC Select Existing",
+          "type": "ROW_COUNT",
+          "logic": "Transformation type: ROW_COUNT",
+          "pyspark_function": "df.count",
+          "code_template": "\n# Row Count: {trans_name}\n{count_var} = {input_df}.count()\nprint(f\"Row count for {trans_name}: {{count_var}}\")\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\RC Select Existing",
+          "component_class": "Microsoft.RowCount",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "RowCountOutput",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "CHK",
+          "type": "DERIVED_COLUMN",
+          "logic": "CheckSum_NEW = (DT_I4)([CountryID] + [CategoryID] + [LocalCategoryID])",
+          "pyspark_function": "df.withColumn",
+          "code_template": "\n# Derived Column: {trans_name}\n{output_df} = {input_df}\n{column_additions}\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\CHK",
+          "component_class": "Microsoft.DerivedColumn",
+          "expressions": [
+            {
+              "name": "Expression",
+              "value": "(DT_I4)([CountryID] + [CategoryID] + [LocalCategoryID])"
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "(DT_I4)([CountryID] + [CategoryID] + [LocalCategoryID])"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "Derived Column Output",
+              "description": "Default Output of the Derived Column Transformation"
+            }
+          ]
+        },
+        {
+          "name": "DER_DefaultFlags",
+          "type": "DERIVED_COLUMN",
+          "logic": "DeletedFlag = 0 | TemplateFlag = 0",
+          "pyspark_function": "df.withColumn",
+          "code_template": "\n# Derived Column: {trans_name}\n{output_df} = {input_df}\n{column_additions}\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\DER_DefaultFlags",
+          "component_class": "Microsoft.DerivedColumn",
+          "expressions": [
+            {
+              "name": "Expression",
+              "value": "0"
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "0"
+            },
+            {
+              "name": "Expression",
+              "value": "0"
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "0"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "Derived Column Output",
+              "description": "Default Output of the Derived Column Transformation"
+            }
+          ]
+        },
+        {
+          "name": "DER_NullableColumns",
+          "type": "DERIVED_COLUMN",
+          "logic": "No derived column logic found",
+          "pyspark_function": "df.withColumn",
+          "code_template": "\n# Derived Column: {trans_name}\n{output_df} = {input_df}\n{column_additions}\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\DER_NullableColumns",
+          "component_class": "Microsoft.DerivedColumn",
+          "expressions": [
+            {
+              "name": "Expression",
+              "value": "ISNULL(DeletedFlag_OLD) == TRUE ? 0 : DeletedFlag_OLD"
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "ISNULL(DeletedFlag_OLD) == TRUE ? 0 : DeletedFlag_OLD"
+            },
+            {
+              "name": "Expression",
+              "value": "ISNULL(CheckSum_New) == TRUE ? -1 : CheckSum_New"
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "ISNULL(CheckSum_New) == TRUE ? -1 : CheckSum_New"
+            },
+            {
+              "name": "Expression",
+              "value": "ISNULL(CheckSum_OLD) == TRUE ? -1 : CheckSum_OLD"
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "ISNULL(CheckSum_OLD) == TRUE ? -1 : CheckSum_OLD"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "Derived Column Output",
+              "description": "Default Output of the Derived Column Transformation"
+            }
+          ]
+        },
+        {
+          "name": "MRGJ",
+          "type": "MERGE",
+          "logic": {
+            "join_type": "inner",
+            "join_conditions": [
+              {
+                "left_column": "CountryID",
+                "right_column": "CountryID",
+                "operator": "=="
+              },
+              {
+                "left_column": "CategoryID",
+                "right_column": "CategoryID",
+                "operator": "=="
+              }
+            ],
+            "left_source_components": [
+              "SRT"
+            ],
+            "right_source_components": [
+              "OLE_SRC_Existing"
+            ],
+            "treat_nulls_as_equal": "true"
+          },
+          "pyspark_function": "df.join",
+          "code_template": "\n# Merge Join: {trans_name}\n# Join two datasets on specified keys\n{output_df} = {input_df1}.join(\n    {input_df2},\n    on={join_keys},\n    how=\"{join_type}\"  # inner, left, right, or full\n)\nlogger.info(f\"Merge join completed: {{ {output_df}.count() }} rows\")\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\MRGJ",
+          "component_class": "Microsoft.MergeJoin",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "Merge Join Output",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "RC INT Total Rows",
+          "type": "ROW_COUNT",
+          "logic": "Transformation type: ROW_COUNT",
+          "pyspark_function": "df.count",
+          "code_template": "\n# Row Count: {trans_name}\n{count_var} = {input_df}.count()\nprint(f\"Row count for {trans_name}: {{count_var}}\")\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\RC INT Total Rows",
+          "component_class": "Microsoft.RowCount",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "RowCountOutput",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "DER_ProcessingFlags",
+          "type": "DERIVED_COLUMN",
+          "logic": "WorkHistoryID = @[User::TaskWorkHistoryID] | InExistingFlag = !ISNULL(CheckSum_OLD) | InFeedFlag = !ISNULL(CheckSum_New) | CheckSumMatchesFlag = CheckSum_New == CheckSum_OLD | AlreadyHardDeletedFlag = DeletedFlag_OLD == 1",
+          "pyspark_function": "df.withColumn",
+          "code_template": "\n# Derived Column: {trans_name}\n{output_df} = {input_df}\n{column_additions}\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\DER_ProcessingFlags",
+          "component_class": "Microsoft.DerivedColumn",
+          "expressions": [
+            {
+              "name": "Expression",
+              "value": "@[User::TaskWorkHistoryID]"
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "@[User::TaskWorkHistoryID]"
+            },
+            {
+              "name": "Expression",
+              "value": "!ISNULL(CheckSum_OLD)"
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "!ISNULL(CheckSum_OLD)"
+            },
+            {
+              "name": "Expression",
+              "value": "!ISNULL(CheckSum_New)"
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "!ISNULL(CheckSum_New)"
+            },
+            {
+              "name": "Expression",
+              "value": "CheckSum_New == CheckSum_OLD"
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "CheckSum_New == CheckSum_OLD"
+            },
+            {
+              "name": "Expression",
+              "value": "DeletedFlag_OLD == 1"
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "DeletedFlag_OLD == 1"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "Derived Column Output",
+              "description": "Default Output of the Derived Column Transformation"
+            }
+          ]
+        },
+        {
+          "name": "CSPL",
+          "type": "CONDITIONAL_SPLIT",
+          "logic": "INSERT: InExistingFlag ==  FALSE  | NO CHANGE - Default Row: IsDefaultRowFlag ==  TRUE  | NO CHANGE - Not arrived in Feed, already Hard Deleted or default: InFeedFlag ==  FALSE  && AlreadyHardDeletedFlag ==  TRUE  | DELETE: InFeedFlag ==  FALSE  && AlreadyHardDeletedFlag ==  FALSE  | UPDATE: CheckSumMatchesFlag ==  FALSE ",
+          "pyspark_function": "df.filter",
+          "code_template": "\n# Conditional Split: {trans_name}\n{output_splits}\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\CSPL",
+          "component_class": "Microsoft.ConditionalSplit",
+          "expressions": [
+            {
+              "name": "Expression",
+              "value": "#{Package\\DFT Load\\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[InExistingFlag]} ==  FALSE "
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "InExistingFlag ==  FALSE "
+            },
+            {
+              "name": "Expression",
+              "value": "#{Package\\DFT Load\\MRGJ.Outputs[Merge Join Output].Columns[IsDefaultRowFlag]} ==  TRUE "
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "IsDefaultRowFlag ==  TRUE "
+            },
+            {
+              "name": "Expression",
+              "value": "#{Package\\DFT Load\\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[InFeedFlag]} ==  FALSE  && #{Package\\DFT Load\\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[AlreadyHardDeletedFlag]} ==  TRUE "
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "InFeedFlag ==  FALSE  && AlreadyHardDeletedFlag ==  TRUE "
+            },
+            {
+              "name": "Expression",
+              "value": "#{Package\\DFT Load\\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[InFeedFlag]} ==  FALSE  && #{Package\\DFT Load\\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[AlreadyHardDeletedFlag]} ==  FALSE "
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "InFeedFlag ==  FALSE  && AlreadyHardDeletedFlag ==  FALSE "
+            },
+            {
+              "name": "Expression",
+              "value": "#{Package\\DFT Load\\DER_ProcessingFlags.Outputs[Derived Column Output].Columns[CheckSumMatchesFlag]} ==  FALSE "
+            },
+            {
+              "name": "FriendlyExpression",
+              "value": "CheckSumMatchesFlag ==  FALSE "
+            }
+          ],
+          "outputs": [
+            {
+              "name": "INSERT",
+              "description": "Output 2 of the Conditional Split Transformation"
+            },
+            {
+              "name": "NO CHANGE - Default Row",
+              "description": "Output 5 of the Conditional Split Transformation"
+            },
+            {
+              "name": "NO CHANGE - Not arrived in Feed, already Hard Deleted or default",
+              "description": "Output 1 of the Conditional Split Transformation"
+            },
+            {
+              "name": "DELETE",
+              "description": "Output 4 of the Conditional Split Transformation"
+            },
+            {
+              "name": "UPDATE",
+              "description": "Output 3 of the Conditional Split Transformation"
+            },
+            {
+              "name": "NO CHANGE - Arrived, exists, is not default, and matches",
+              "description": "Default Output of the Conditional Split Transformation"
+            }
+          ]
+        },
+        {
+          "name": "RC Insert",
+          "type": "ROW_COUNT",
+          "logic": "Transformation type: ROW_COUNT",
+          "pyspark_function": "df.count",
+          "code_template": "\n# Row Count: {trans_name}\n{count_var} = {input_df}.count()\nprint(f\"Row count for {trans_name}: {{count_var}}\")\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\RC Insert",
+          "component_class": "Microsoft.RowCount",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "RowCountOutput",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "RC Update",
+          "type": "ROW_COUNT",
+          "logic": "Transformation type: ROW_COUNT",
+          "pyspark_function": "df.count",
+          "code_template": "\n# Row Count: {trans_name}\n{count_var} = {input_df}.count()\nprint(f\"Row count for {trans_name}: {{count_var}}\")\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\RC Update",
+          "component_class": "Microsoft.RowCount",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "RowCountOutput",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "CMD_SP",
+          "type": "OLE_DB_COMMAND",
+          "logic": {
+            "sql_command": "EXEC [dbo].[sp_GenericUpdate] ?,?,?,?,?,?,?",
+            "input_columns": [
+              {
+                "column_name": "WorkHistoryID",
+                "parameter_name": "@piWorkHistoryID"
+              },
+              {
+                "column_name": "DeletedFlag",
+                "parameter_name": "@piDeletedFlag"
+              },
+              {
+                "column_name": "TemplateFlag",
+                "parameter_name": "@piTemplateFlag"
+              },
+              {
+                "column_name": "CountryID_OLD",
+                "parameter_name": "@piCountryID"
+              },
+              {
+                "column_name": "CategoryID_OLD",
+                "parameter_name": "@piCategoryID"
+              },
+              {
+                "column_name": "LocalCategoryID",
+                "parameter_name": "@piLocalCategoryID"
+              },
+              {
+                "column_name": "CheckSum_New",
+                "parameter_name": "@piCheckSum_New"
+              }
+            ]
+          },
+          "pyspark_function": "df.filter or df.withColumn",
+          "code_template": "\n# OLE DB Command: {trans_name}\n# For DELETE operations - use left_anti join or filter\n{output_df} = {input_df}.filter({condition})\nlogger.info(f\"OLE DB Command DELETE executed: {{ {output_df}.count() }} rows affected\")\n\n# For UPDATE operations - use withColumn to update values\n# {output_df} = {input_df}.withColumn({column}, {new_value})\nlogger.info(f\"OLE DB Command UPDATE executed\")\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\CMD_SP",
+          "component_class": "Microsoft.OLEDBCommand",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "OLE DB Command Output",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "RC Delete",
+          "type": "ROW_COUNT",
+          "logic": "Transformation type: ROW_COUNT",
+          "pyspark_function": "df.count",
+          "code_template": "\n# Row Count: {trans_name}\n{count_var} = {input_df}.count()\nprint(f\"Row count for {trans_name}: {{count_var}}\")\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\RC Delete",
+          "component_class": "Microsoft.RowCount",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "RowCountOutput",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "CMD_Delete",
+          "type": "OLE_DB_COMMAND",
+          "logic": {
+            "sql_command": "EXEC [dbo].[sp_GenericHardDelete] ?, ?, ?",
+            "input_columns": [
+              {
+                "column_name": "WorkHistoryID",
+                "parameter_name": "@piWorkHistoryID"
+              },
+              {
+                "column_name": "CountryID_OLD",
+                "parameter_name": "@piCountryID"
+              },
+              {
+                "column_name": "CategoryID_OLD",
+                "parameter_name": "@piCategoryID"
+              }
+            ]
+          },
+          "pyspark_function": "df.filter or df.withColumn",
+          "code_template": "\n# OLE DB Command: {trans_name}\n# For DELETE operations - use left_anti join or filter\n{output_df} = {input_df}.filter({condition})\nlogger.info(f\"OLE DB Command DELETE executed: {{ {output_df}.count() }} rows affected\")\n\n# For UPDATE operations - use withColumn to update values\n# {output_df} = {input_df}.withColumn({column}, {new_value})\nlogger.info(f\"OLE DB Command UPDATE executed\")\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\CMD_Delete",
+          "component_class": "Microsoft.OLEDBCommand",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "OLE DB Command Output",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "RC INT Arrived but Unchanged",
+          "type": "ROW_COUNT",
+          "logic": "Transformation type: ROW_COUNT",
+          "pyspark_function": "df.count",
+          "code_template": "\n# Row Count: {trans_name}\n{count_var} = {input_df}.count()\nprint(f\"Row count for {trans_name}: {{count_var}}\")\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\RC INT Arrived but Unchanged",
+          "component_class": "Microsoft.RowCount",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "RowCountOutput",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "RC INT Default row",
+          "type": "ROW_COUNT",
+          "logic": "Transformation type: ROW_COUNT",
+          "pyspark_function": "df.count",
+          "code_template": "\n# Row Count: {trans_name}\n{count_var} = {input_df}.count()\nprint(f\"Row count for {trans_name}: {{count_var}}\")\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\RC INT Default row",
+          "component_class": "Microsoft.RowCount",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "RowCountOutput",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "TD Arrived but Unchanged",
+          "type": "ROW_COUNT",
+          "logic": "Transformation type: ROW_COUNT",
+          "pyspark_function": "df.count",
+          "code_template": "\n# Row Count: {trans_name}\n{count_var} = {input_df}.count()\nprint(f\"Row count for {trans_name}: {{count_var}}\")\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\TD Arrived but Unchanged",
+          "component_class": "Microsoft.RowCount",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "RowCountOutput",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "TD Default Row",
+          "type": "ROW_COUNT",
+          "logic": "Transformation type: ROW_COUNT",
+          "pyspark_function": "df.count",
+          "code_template": "\n# Row Count: {trans_name}\n{count_var} = {input_df}.count()\nprint(f\"Row count for {trans_name}: {{count_var}}\")\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\TD Default Row",
+          "component_class": "Microsoft.RowCount",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "RowCountOutput",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "name": "RC Intermediate",
+          "type": "ROW_COUNT",
+          "logic": "Transformation type: ROW_COUNT",
+          "pyspark_function": "df.count",
+          "code_template": "\n# Row Count: {trans_name}\n{count_var} = {input_df}.count()\nprint(f\"Row count for {trans_name}: {{count_var}}\")\n",
+          "mapped": true,
+          "component_id": "Package\\DFT Load\\RC Intermediate",
+          "component_class": "Microsoft.RowCount",
+          "expressions": [],
+          "outputs": [
+            {
+              "name": "RowCountOutput",
+              "description": ""
+            }
+          ]
+        }
+      ],
+      "destinations": [
+        {
+          "name": "OLE_DST",
+          "type": "OTHER",
+          "table_name": "[dbo].[DST_GenericTable]",
+          "pyspark_function": "df.write.format(\"jdbc\")",
+          "code_template": "\n# Write to destination: {dest_name}\n# Assuming SQL destination\n{input_df}.write \\\n    .format(\"jdbc\") \\\n    .option(\"url\", \"{jdbc_url}\") \\\n    .option(\"dbtable\", \"{table_name}\") \\\n    .option(\"user\", \"{username}\") \\\n    .option(\"password\", \"{password}\") \\\n    .option(\"driver\", \"com.microsoft.sqlserver.jdbc.SQLServerDriver\") \\\n    .mode(\"append\") \\\n    .save()\n",
+          "mapped": true,
+          "connection": {
+            "name": "DBX_Output",
+            "id": "Package.ConnectionManagers[DBX_Output]"
+          },
+          "component_id": "Package\\DFT Load\\OLE_DST"
+        }
+      ],
+      "data_flow_paths": [
+        {
+          "from": "OLE_SRC",
+          "to": "RC Select",
+          "from_id": "Package\\DFT Load\\OLE_SRC",
+          "to_id": "Package\\DFT Load\\RC Select",
+          "path_name": "OLE DB Source Output"
+        },
+        {
+          "from": "RC Select",
+          "to": "LKP_1",
+          "from_id": "Package\\DFT Load\\RC Select",
+          "to_id": "Package\\DFT Load\\LKP_1",
+          "path_name": "RowCountOutput"
+        },
+        {
+          "from": "OLE_SRC",
+          "to": "RC Select",
+          "from_id": "Package\\DFT Load\\OLE_SRC",
+          "to_id": "Package\\DFT Load\\RC Select",
+          "path_name": "OLE DB Source Output Existing"
+        },
+        {
+          "from": "RC Select",
+          "to": "MRGJ",
+          "from_id": "Package\\DFT Load\\RC Select",
+          "to_id": "Package\\DFT Load\\MRGJ",
+          "path_name": "RowCountOutput Existing"
+        },
+        {
+          "from": "LKP_1",
+          "to": "LKP_2",
+          "from_id": "Package\\DFT Load\\LKP_1",
+          "to_id": "Package\\DFT Load\\LKP_2",
+          "path_name": "Lookup Output"
+        },
+        {
+          "from": "LKP_2",
+          "to": "LKP_3",
+          "from_id": "Package\\DFT Load\\LKP_2",
+          "to_id": "Package\\DFT Load\\LKP_3",
+          "path_name": "Lookup Output1"
+        },
+        {
+          "from": "LKP_3",
+          "to": "SRT",
+          "from_id": "Package\\DFT Load\\LKP_3",
+          "to_id": "Package\\DFT Load\\SRT",
+          "path_name": "Lookup Output2"
+        },
+        {
+          "from": "SRT",
+          "to": "DER",
+          "from_id": "Package\\DFT Load\\SRT",
+          "to_id": "Package\\DFT Load\\DER",
+          "path_name": "Sort Output"
+        },
+        {
+          "from": "DER",
+          "to": "CHK",
+          "from_id": "Package\\DFT Load\\DER",
+          "to_id": "Package\\DFT Load\\CHK",
+          "path_name": "Derived Column Output"
+        },
+        {
+          "from": "CHK",
+          "to": "DER",
+          "from_id": "Package\\DFT Load\\CHK",
+          "to_id": "Package\\DFT Load\\DER",
+          "path_name": "ChecksumOutput"
+        },
+        {
+          "from": "DER",
+          "to": "MRGJ",
+          "from_id": "Package\\DFT Load\\DER",
+          "to_id": "Package\\DFT Load\\MRGJ",
+          "path_name": "Derived Column Output DefaultFlags"
+        },
+        {
+          "from": "MRGJ",
+          "to": "RC INT Total Rows",
+          "from_id": "Package\\DFT Load\\MRGJ",
+          "to_id": "Package\\DFT Load\\RC INT Total Rows",
+          "path_name": "Merge Join Output"
+        },
+        {
+          "from": "RC INT Total Rows",
+          "to": "DER",
+          "from_id": "Package\\DFT Load\\RC INT Total Rows",
+          "to_id": "Package\\DFT Load\\DER",
+          "path_name": "RowCountOutput Total Rows"
+        },
+        {
+          "from": "DER",
+          "to": "DER",
+          "from_id": "Package\\DFT Load\\DER",
+          "to_id": "Package\\DFT Load\\DER",
+          "path_name": "Derived Column Output Nullable"
+        },
+        {
+          "from": "DER",
+          "to": "CSPL",
+          "from_id": "Package\\DFT Load\\DER",
+          "to_id": "Package\\DFT Load\\CSPL",
+          "path_name": "Derived Column Output ProcessingFlags"
+        },
+        {
+          "from": "CSPL",
+          "to": "RC Insert",
+          "from_id": "Package\\DFT Load\\CSPL",
+          "to_id": "Package\\DFT Load\\RC Insert",
+          "path_name": "INSERT"
+        },
+        {
+          "from": "CSPL",
+          "to": "RC Update",
+          "from_id": "Package\\DFT Load\\CSPL",
+          "to_id": "Package\\DFT Load\\RC Update",
+          "path_name": "UPDATE"
+        },
+        {
+          "from": "RC Update",
+          "to": "CMD_SP",
+          "from_id": "Package\\DFT Load\\RC Update",
+          "to_id": "Package\\DFT Load\\CMD_SP",
+          "path_name": "RowCountOutput2"
+        },
+        {
+          "from": "CSPL",
+          "to": "RC Delete",
+          "from_id": "Package\\DFT Load\\CSPL",
+          "to_id": "Package\\DFT Load\\RC Delete",
+          "path_name": "DELETE"
+        },
+        {
+          "from": "CSPL",
+          "to": "RC INT Arrived but Unchanged",
+          "from_id": "Package\\DFT Load\\CSPL",
+          "to_id": "Package\\DFT Load\\RC INT Arrived but Unchanged",
+          "path_name": "NO CHANGE - Arrived, exists, is not default, and matches"
+        },
+        {
+          "from": "RC INT Arrived but Unchanged",
+          "to": "TD Arrived but Unchanged",
+          "from_id": "Package\\DFT Load\\RC INT Arrived but Unchanged",
+          "to_id": "Package\\DFT Load\\TD Arrived but Unchanged",
+          "path_name": "RowCountOutput Arrived but Unchanged"
+        },
+        {
+          "from": "CSPL",
+          "to": "RC INT Default row",
+          "from_id": "Package\\DFT Load\\CSPL",
+          "to_id": "Package\\DFT Load\\RC INT Default row",
+          "path_name": "NO CHANGE - Default Row"
+        },
+        {
+          "from": "RC INT Default row",
+          "to": "TD Default Row",
+          "from_id": "Package\\DFT Load\\RC INT Default row",
+          "to_id": "Package\\DFT Load\\TD Default Row",
+          "path_name": "RowCountOutput Default row"
+        },
+        {
+          "from": "RC Delete",
+          "to": "CMD_Delete",
+          "from_id": "Package\\DFT Load\\RC Delete",
+          "to_id": "Package\\DFT Load\\CMD_Delete",
+          "path_name": "RowCountOutput Delete"
+        },
+        {
+          "from": "CMD_Delete",
+          "to": "RC Intermediate",
+          "from_id": "Package\\DFT Load\\CMD_Delete",
+          "to_id": "Package\\DFT Load\\RC Intermediate",
+          "path_name": "RowCountOutput3"
+        },
+        {
+          "from": "RC Insert",
+          "to": "OLE_DST",
+          "from_id": "Package\\DFT Load\\RC Insert",
+          "to_id": "Package\\DFT Load\\OLE_DST",
+          "path_name": "RowCountOutput4"
+        }
+      ],
+      "fully_mapped": true
+    }
+  ],
+  "execution_flow": [
+    {
+      "from": "SQL Check Regulatory RowCount",
+      "to": "DFT Load",
+      "from_id": "{A2B3C4D5-E6F7-4789-A123-B45678901234}",
+      "to_id": "{B2C3D4E5-F6A7-4789-B123-C45678901234}",
+      "description": "Execute DFT Load after SQL Check Regulatory RowCount"
+    },
+    {
+      "from": "DFT Load",
+      "to": "SQL Set TaskWorkHistoryID",
+      "from_id": "{B2C3D4E5-F6A7-4789-B123-C45678901234}",
+      "to_id": "{D3E4F5A6-B7C8-4789-D234-E56789012345}",
+      "description": "Execute SQL Set TaskWorkHistoryID after DFT Load"
+    }
+  ],
+  "statistics": {
+    "total_connections": 3,
+    "mapped_connections": 3,
+    "total_sql_tasks": 2,
+    "mapped_sql_tasks": 1,
+    "total_sources": 2,
+    "mapped_sources": 2,
+    "total_transformations": 24,
+    "mapped_transformations": 24,
+    "total_destinations": 1,
+    "mapped_destinations": 1,
+    "overall_mapping_rate": 100.0
+  }
+}

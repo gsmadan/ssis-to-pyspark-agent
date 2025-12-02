@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts" DTS:refId="Package" DTS:CreationDate="1/1/2024" DTS:CreationName="Microsoft.Package" DTS:CreatorComputerName="" DTS:CreatorName="" DTS:DTSID="{A1B2C3D4-E5F6-4789-A012-B3456789CDEF}" DTS:EnableConfig="True" DTS:ExecutableType="Microsoft.Package" DTS:LastModifiedProductVersion="15.0.0900.40" DTS:LocaleID="2057" DTS:ObjectName="Sample Simple Package" DTS:PackageType="5" DTS:VersionBuild="1" DTS:VersionGUID="{A1B2C3D4-E5F6-4789-A012-B3456789CDEF}">
+      <DTS:Property DTS:Name="PackageFormatVersion">8</DTS:Property>
+      <DTS:ConnectionManagers>
+            <DTS:ConnectionManager DTS:refId="Package.ConnectionManagers[SRC_OLEDB]" DTS:CreationName="OLEDB" DTS:DTSID="{B1C2D3E4-F5A6-4789-B012-C3456789DEF0}" DTS:ObjectName="SRC_OLEDB">
+                  <DTS:ObjectData>
+                        <DTS:ConnectionManager DTS:ConnectionString="Data Source=localhost;Initial Catalog=SRC_Database;Provider=SQLNCLI11.1;Integrated Security=SSPI;" />
+                  </DTS:ObjectData>
+            </DTS:ConnectionManager>
+            <DTS:ConnectionManager DTS:refId="Package.ConnectionManagers[DBX_Output]" DTS:CreationName="OLEDB" DTS:DTSID="{C1D2E3F4-A5B6-4789-C012-D3456789EF01}" DTS:ObjectName="DBX_Output">
+                  <DTS:ObjectData>
+                        <DTS:ConnectionManager DTS:ConnectionString="Data Source=localhost;Initial Catalog=DST_Database;Provider=SQLNCLI11.1;Integrated Security=SSPI;" />
+                  </DTS:ObjectData>
+            </DTS:ConnectionManager>
+      </DTS:ConnectionManagers>
+      <DTS:Variables />
+      <DTS:LoggingOptions DTS:FilterKind="0" DTS:LoggingMode="0" />
+      <DTS:Executables>
+            <DTS:Executable DTS:refId="Package\SQL TRUNCATE SRC_GenericTable" DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{D1E2F3A4-B5C6-4789-D012-E3456789F012}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="SQL TRUNCATE SRC_GenericTable" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server v9; © 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1" DTS:ThreadHint="2">
+                  <DTS:Variables />
+                  <DTS:LoggingOptions DTS:FilterKind="0" />
+                  <DTS:ObjectData>
+                        <SQLTask:SqlTaskData SQLTask:Connection="{C1D2E3F4-A5B6-4789-C012-D3456789EF01}" SQLTask:BypassPrepare="False" SQLTask:SqlStatementSource="TRUNCATE TABLE [dbo].[SRC_GenericTable]"
+                              xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+                  </DTS:ObjectData>
+            </DTS:Executable>
+            <DTS:Executable DTS:refId="Package\DFT_Load" DTS:CreationName="Microsoft.Pipeline" DTS:Description="Data Flow Task" DTS:DTSID="{E1F2A3B4-C5D6-4789-E012-F34567890123}" DTS:ExecutableType="Microsoft.Pipeline" DTS:LocaleID="-1" DTS:ObjectName="DFT_Load" DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server v9; (C) 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+                  <DTS:Variables />
+                  <DTS:LoggingOptions DTS:FilterKind="0" />
+                  <DTS:ObjectData>
+                        <pipeline BLOBTempStoragePath="" bufferTempStoragePath="" engineThreads="5" version="1">
+                              <components>
+                                    <component refId="Package\DFT_Load\OLE_SRC" componentClassID="Microsoft.OLEDBSource" contactInfo="OLE DB Source;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7" description="OLE DB Source" name="OLE_SRC" usesDispositions="true" version="7">
+                                          <properties>
+                                                <property dataType="System.Int32" description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out." name="CommandTimeout">0</property>
+                                                <property dataType="System.String" description="Specifies the name of the database object used to open a rowset." name="OpenRowset"></property>
+                                                <property dataType="System.String" description="Specifies the variable that contains the name of the database object used to open a rowset." name="OpenRowsetVariable"></property>
+                                                <property dataType="System.String" description="The SQL command to be executed." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT
+  [ID],
+  [Name],
+  [Value],
+  [Status]
+FROM
+  [dbo].[SRC_InputTable]</property>
+                                                <property dataType="System.String" description="The variable that contains the SQL command to be executed." name="SqlCommandVariable"></property>
+                                                <property dataType="System.Int32" description="Specifies the column code page to use when code page information is unavailable from the data source." name="DefaultCodePage">1252</property>
+                                                <property dataType="System.Boolean" description="Forces the use of the DefaultCodePage property value when describing character data." name="AlwaysUseDefaultCodePage">false</property>
+                                                <property dataType="System.Int32" description="Specifies the mode used to access the database." name="AccessMode" typeConverter="AccessMode">2</property>
+                                                <property dataType="System.String" description="The mappings between the parameters in the SQL command and variables." name="ParameterMapping"></property>
+                                          </properties>
+                                          <connections>
+                                                <connection refId="Package\DFT_Load\OLE_SRC.Connections[OleDbConnection]" connectionManagerID="Package.ConnectionManagers[SRC_OLEDB]" connectionManagerRefId="Package.ConnectionManagers[SRC_OLEDB]" description="The OLE DB runtime connection used to access the database." name="OleDbConnection" />
+                                          </connections>
+                                          <outputs>
+                                                <output refId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output]" name="OLE DB Source Output">
+                                                      <outputColumns>
+                                                            <outputColumn refId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[ID]" dataType="i4" errorOrTruncationOperation="Conversion" errorRowDisposition="FailComponent" externalMetadataColumnId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].ExternalColumns[ID]" lineageId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[ID]" name="ID" truncationRowDisposition="FailComponent" />
+                                                            <outputColumn refId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[Name]" codePage="1252" dataType="str" errorOrTruncationOperation="Conversion" errorRowDisposition="FailComponent" externalMetadataColumnId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].ExternalColumns[Name]" length="255" lineageId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[Name]" name="Name" truncationRowDisposition="FailComponent" />
+                                                            <outputColumn refId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[Value]" dataType="r8" errorOrTruncationOperation="Conversion" errorRowDisposition="FailComponent" externalMetadataColumnId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].ExternalColumns[Value]" lineageId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[Value]" name="Value" truncationRowDisposition="FailComponent" />
+                                                            <outputColumn refId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[Status]" codePage="1252" dataType="str" errorOrTruncationOperation="Conversion" errorRowDisposition="FailComponent" externalMetadataColumnId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].ExternalColumns[Status]" length="50" lineageId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[Status]" name="Status" truncationRowDisposition="FailComponent" />
+                                                      </outputColumns>
+                                                      <externalMetadataColumns isUsed="True">
+                                                            <externalMetadataColumn refId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].ExternalColumns[ID]" dataType="i4" name="ID" />
+                                                            <externalMetadataColumn refId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].ExternalColumns[Name]" codePage="1252" dataType="str" length="255" name="Name" />
+                                                            <externalMetadataColumn refId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].ExternalColumns[Value]" dataType="r8" name="Value" />
+                                                            <externalMetadataColumn refId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].ExternalColumns[Status]" codePage="1252" dataType="str" length="50" name="Status" />
+                                                      </externalMetadataColumns>
+                                                </output>
+                                          </outputs>
+                                    </component>
+                                    <component refId="Package\DFT_Load\RC Insert" componentClassID="Microsoft.RowCount" contactInfo="Row Count;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;0" description="Counts rows passing through" name="RC Insert" usesDispositions="true">
+                                          <properties>
+                                                <property dataType="System.String" description="Variable to store the row count" name="VariableName">User::VAR_RowCount</property>
+                                          </properties>
+                                          <inputs>
+                                                <input refId="Package\DFT_Load\RC Insert.Inputs[RowCountInput]" name="RowCountInput">
+                                                      <externalMetadataColumns />
+                                                </input>
+                                          </inputs>
+                                          <outputs>
+                                                <output refId="Package\DFT_Load\RC Insert.Outputs[RowCountOutput]" name="RowCountOutput" synchronousInputId="Package\DFT_Load\RC Insert.Inputs[RowCountInput]">
+                                                      <externalMetadataColumns />
+                                                </output>
+                                          </outputs>
+                                    </component>
+                                    <component refId="Package\DFT_Load\OLE_DST" componentClassID="Microsoft.OLEDBDestination" contactInfo="OLE DB Destination;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4" description="OLE DB Destination" name="OLE_DST" usesDispositions="true" version="4">
+                                          <properties>
+                                                <property dataType="System.Int32" description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out." name="CommandTimeout">0</property>
+                                                <property dataType="System.String" description="Specifies the name of the database object used to open a rowset." name="OpenRowset">[dbo].[SRC_GenericTable]</property>
+                                                <property dataType="System.String" description="Specifies the variable that contains the name of the database object used to open a rowset." name="OpenRowsetVariable"></property>
+                                                <property dataType="System.String" description="The SQL command to be executed." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                                                <property dataType="System.Int32" description="Specifies the column code page to use when code page information is unavailable from the data source." name="DefaultCodePage">1252</property>
+                                                <property dataType="System.Boolean" description="Forces the use of the DefaultCodePage property value when describing character data." name="AlwaysUseDefaultCodePage">false</property>
+                                                <property dataType="System.Int32" description="Specifies the mode used to access the database." name="AccessMode" typeConverter="AccessMode">3</property>
+                                                <property dataType="System.Boolean" description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on." name="FastLoadKeepIdentity">false</property>
+                                                <property dataType="System.Boolean" description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destinaton. Applies only if fast load is turned on." name="FastLoadKeepNulls">false</property>
+                                                <property dataType="System.String" description="Specifies options to be used with fast load.  Applies only if fast load is turned on." name="FastLoadOptions"></property>
+                                                <property dataType="System.Int32" description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on." name="FastLoadMaxInsertCommitSize">0</property>
+                                          </properties>
+                                          <connections>
+                                                <connection refId="Package\DFT_Load\OLE_DST.Connections[OleDbConnection]" connectionManagerID="Package.ConnectionManagers[DBX_Output]" connectionManagerRefId="Package.ConnectionManagers[DBX_Output]" description="The OLE DB runtime connection used to access the database." name="OleDbConnection" />
+                                          </connections>
+                                          <inputs>
+                                                <input refId="Package\DFT_Load\OLE_DST.Inputs[OLE DB Destination Input]" errorOrTruncationOperation="Insert" errorRowDisposition="FailComponent" hasSideEffects="true" name="OLE DB Destination Input">
+                                                      <inputColumns>
+                                                            <inputColumn refId="Package\DFT_Load\OLE_DST.Inputs[OLE DB Destination Input].Columns[ID]" cachedDataType="i4" cachedName="ID" externalMetadataColumnId="Package\DFT_Load\OLE_DST.Inputs[OLE DB Destination Input].ExternalColumns[ID]" lineageId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[ID]" />
+                                                            <inputColumn refId="Package\DFT_Load\OLE_DST.Inputs[OLE DB Destination Input].Columns[Name]" cachedCodepage="1252" cachedDataType="str" cachedLength="255" cachedName="Name" externalMetadataColumnId="Package\DFT_Load\OLE_DST.Inputs[OLE DB Destination Input].ExternalColumns[Name]" lineageId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[Name]" />
+                                                            <inputColumn refId="Package\DFT_Load\OLE_DST.Inputs[OLE DB Destination Input].Columns[Value]" cachedDataType="r8" cachedName="Value" externalMetadataColumnId="Package\DFT_Load\OLE_DST.Inputs[OLE DB Destination Input].ExternalColumns[Value]" lineageId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[Value]" />
+                                                            <inputColumn refId="Package\DFT_Load\OLE_DST.Inputs[OLE DB Destination Input].Columns[Status]" cachedCodepage="1252" cachedDataType="str" cachedLength="50" cachedName="Status" externalMetadataColumnId="Package\DFT_Load\OLE_DST.Inputs[OLE DB Destination Input].ExternalColumns[Status]" lineageId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output].Columns[Status]" />
+                                                      </inputColumns>
+                                                      <externalMetadataColumns isUsed="True">
+                                                            <externalMetadataColumn refId="Package\DFT_Load\OLE_DST.Inputs[OLE DB Destination Input].ExternalColumns[ID]" dataType="i4" name="ID" />
+                                                            <externalMetadataColumn refId="Package\DFT_Load\OLE_DST.Inputs[OLE DB Destination Input].ExternalColumns[Name]" codePage="1252" dataType="str" length="255" name="Name" />
+                                                            <externalMetadataColumn refId="Package\DFT_Load\OLE_DST.Inputs[OLE DB Destination Input].ExternalColumns[Value]" dataType="r8" name="Value" />
+                                                            <externalMetadataColumn refId="Package\DFT_Load\OLE_DST.Inputs[OLE DB Destination Input].ExternalColumns[Status]" codePage="1252" dataType="str" length="50" name="Status" />
+                                                      </externalMetadataColumns>
+                                                </input>
+                                          </inputs>
+                                          <outputs>
+                                                <output refId="Package\DFT_Load\OLE_DST.Outputs[OLE DB Destination Error Output]" exclusionGroup="1" isErrorOut="true" name="OLE DB Destination Error Output" synchronousInputId="Package\DFT_Load\OLE_DST.Inputs[OLE DB Destination Input]">
+                                                      <outputColumns>
+                                                            <outputColumn refId="Package\DFT_Load\OLE_DST.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]" dataType="i4" lineageId="Package\DFT_Load\OLE_DST.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]" name="ErrorCode" specialFlags="1" />
+                                                            <outputColumn refId="Package\DFT_Load\OLE_DST.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]" dataType="i4" lineageId="Package\DFT_Load\OLE_DST.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]" name="ErrorColumn" specialFlags="2" />
+                                                      </outputColumns>
+                                                      <externalMetadataColumns />
+                                                </output>
+                                          </outputs>
+                                    </component>
+                              </components>
+                              <paths>
+                                    <path refId="Package\DFT_Load.Paths[OLE DB Source Output]" endId="Package\DFT_Load\RC Insert.Inputs[RowCountInput]" name="OLE DB Source Output" startId="Package\DFT_Load\OLE_SRC.Outputs[OLE DB Source Output]" />
+                                    <path refId="Package\DFT_Load.Paths[RowCountOutput]" endId="Package\DFT_Load\OLE_DST.Inputs[OLE DB Destination Input]" name="RowCountOutput" startId="Package\DFT_Load\RC Insert.Outputs[RowCountOutput]" />
+                              </paths>
+                        </pipeline>
+                  </DTS:ObjectData>
+            </DTS:Executable>
+            <DTS:Executable DTS:refId="Package\SQL Add defaults" DTS:CreationName="Microsoft.ExecuteSQLTask" DTS:Description="Execute SQL Task" DTS:DTSID="{F1A2B3C4-D5E6-4789-F012-A34567891234}" DTS:ExecutableType="Microsoft.ExecuteSQLTask" DTS:LocaleID="-1" DTS:ObjectName="SQL Add defaults" DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server v9; © 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1" DTS:ThreadHint="2">
+                  <DTS:Variables />
+                  <DTS:LoggingOptions DTS:FilterKind="0" />
+                  <DTS:ObjectData>
+                        <SQLTask:SqlTaskData SQLTask:Connection="{C1D2E3F4-A5B6-4789-C012-D3456789EF01}" SQLTask:BypassPrepare="False" SQLTask:SqlStatementSource="INSERT INTO [dbo].[SRC_GenericTable]&#xA;([ID], [Name], [Value], [Status])&#xA;VALUES (-1, 'Unknown', 0.0, 'Unknown'),&#xA;(-2, 'Not Applicable', 0.0, 'N/A')"
+                              xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+                  </DTS:ObjectData>
+            </DTS:Executable>
+      </DTS:Executables>
+      <DTS:PrecedenceConstraints>
+            <DTS:PrecedenceConstraint DTS:refId="Package.PrecedenceConstraints[Constraint]" DTS:CreationName="" DTS:DTSID="{A2B3C4D5-E6F7-4789-A123-B45678901234}" DTS:From="Package\SQL TRUNCATE SRC_GenericTable" DTS:LogicalAnd="True" DTS:ObjectName="Constraint" DTS:To="Package\DFT_Load" />
+            <DTS:PrecedenceConstraint DTS:refId="Package.PrecedenceConstraints[Constraint 1]" DTS:CreationName="" DTS:DTSID="{B2C3D4E5-F6A7-4789-B123-C45678901234}" DTS:From="Package\DFT_Load" DTS:LogicalAnd="True" DTS:ObjectName="Constraint 1" DTS:To="Package\SQL Add defaults" />
+      </DTS:PrecedenceConstraints>
+      <DTS:EventHandlers />
+</DTS:Executable>
+

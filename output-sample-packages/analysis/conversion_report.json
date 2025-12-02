@@ -1,0 +1,111 @@
+{
+  "timestamp": "2025-11-21T12:27:10.411689",
+  "process_overview": {
+    "total_packages": 2,
+    "successful": 2,
+    "failed": 0,
+    "success_rate": 100.0,
+    "syntax_valid": 1,
+    "packages_llm_validated": 0
+  },
+  "parsing_statistics": {
+    "connections": 5,
+    "sql_tasks": 4,
+    "sources": 3,
+    "transformations": 25,
+    "destinations": 2,
+    "total_components": 39
+  },
+  "mapping_statistics": {
+    "rule_based": {
+      "connections": "5/5",
+      "sql_tasks": "3/4",
+      "sources": "3/3",
+      "transformations": "25/25",
+      "destinations": "2/2"
+    },
+    "mapping_rates": {
+      "connections": 100.0,
+      "sql_tasks": 75.0,
+      "sources": 100.0,
+      "transformations": 100.0,
+      "destinations": 100.0,
+      "overall": 100.0
+    }
+  },
+  "llm_refinement": {
+    "packages_refined": 0,
+    "improvements_made": {
+      "derived_columns_enhanced": 0,
+      "conditional_logic_added": 0,
+      "null_handling_improved": 0,
+      "complex_expressions_implemented": 0,
+      "total_improvements": 0
+    }
+  },
+  "packages": [
+    {
+      "name": "Sample Medium Package",
+      "file": "Sample_Medium_Package.dtsx",
+      "status": "success",
+      "syntax_valid": false,
+      "llm_validated": false,
+      "code_size": "160 lines",
+      "pyspark_file": "output-sample-packages/pyspark_code/Sample_Medium_Package_pyspark.py",
+      "parsing": {
+        "connections": 3,
+        "sql_tasks": 2,
+        "sources": 2,
+        "transformations": 24,
+        "destinations": 1
+      },
+      "mapping": {
+        "connections": "3/3",
+        "sql_tasks": "1/2",
+        "sources": "2/2",
+        "transformations": "24/24",
+        "destinations": "1/1",
+        "overall_rate": 100.0
+      },
+      "transformations_implemented": 23,
+      "transformation_types": {
+        "Derived Column": 5,
+        "Row Count": 11,
+        "Lookup": 3,
+        "Sort": 1,
+        "MERGE": 1,
+        "Conditional Split": 2
+      },
+      "llm_improvements": {}
+    },
+    {
+      "name": "Sample Simple Package",
+      "file": "Sample_Simple_Package.dtsx",
+      "status": "success",
+      "syntax_valid": true,
+      "llm_validated": false,
+      "code_size": "40 lines",
+      "pyspark_file": "output-sample-packages/pyspark_code/Sample_Simple_Package_pyspark.py",
+      "parsing": {
+        "connections": 2,
+        "sql_tasks": 2,
+        "sources": 1,
+        "transformations": 1,
+        "destinations": 1
+      },
+      "mapping": {
+        "connections": "2/2",
+        "sql_tasks": "2/2",
+        "sources": "1/1",
+        "transformations": "1/1",
+        "destinations": "1/1",
+        "overall_rate": 100.0
+      },
+      "transformations_implemented": 1,
+      "transformation_types": {
+        "Row Count": 1
+      },
+      "llm_improvements": {}
+    }
+  ]
+}
