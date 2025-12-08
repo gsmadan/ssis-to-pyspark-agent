@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 class SSISToPySparkApp:
     """Main application class for SSIS to PySpark conversion."""
     
-    def __init__(self, databricks_mode: bool = True, schema_mapping_file: Optional[str] = None, skip_validation: bool = False):
+    def __init__(self, databricks_mode: bool = True, schema_mapping_file: Optional[str] = None, skip_validation: bool = False, output_path: str = 'output'):
         self.parser = DataEngineeringParser()
         
         # Initialize schema mapper if mapping file provided
@@ -58,7 +58,7 @@ class SSISToPySparkApp:
         )  # LLM fallback disabled - using rule-based mappings only
         self.validator = LLMCodeValidator()  # Initialize LLM validator for output refinement
         self.skip_validation = skip_validation  # Store skip validation flag
-        self.output_base = Path('output')
+        self.output_base = Path(output_path)
         
         # Create output directories
         self._ensure_output_directories()
@@ -98,7 +98,7 @@ class SSISToPySparkApp:
         logger.info(f"       - Data Flows: {len(parsed_data.get('data_flows', []))}")
         
         # Save parsed JSON
-        json_filename = dtsx_file.stem + "_data_engineering.json"
+        json_filename = dtsx_file.stem + "_parsed.json"
         json_path = self.output_base / 'parsed_json' / json_filename
         
         with open(json_path, 'w') as f:
@@ -195,9 +195,8 @@ class SSISToPySparkApp:
                 'text': e.text
             })
             logger.warning(f"  [WARNING] Syntax validation: FAILED at line {e.lineno}")
-        
-        # Return results with code analysis
-        return {
+
+        results = {
             'success': True,
             'package_name': package_name,
             'package_file': dtsx_file.name,
@@ -211,6 +210,21 @@ class SSISToPySparkApp:
             'code_analysis': code_analysis,
             'llm_validated': refined_code != mapping_result['pyspark_code']
         }
+
+        if results:
+            app.print_summary(results)
+            
+            # Generate unified analysis report (post LLM validation)
+            analysis_file = app.output_base / 'analysis' / 'conversion_report.json'
+            analysis_data = app._generate_unified_analysis(results)
+            
+            with open(analysis_file, 'w') as f:
+                json.dump(analysis_data, f, indent=2)
+            
+            logger.info(f"\n[SAVED] Analysis report: {analysis_file}")
+
+        # Return results with code analysis
+        return results
     
     def convert_folder(self, folder_path: str) -> list:
         """
@@ -254,7 +268,19 @@ class SSISToPySparkApp:
                     'package_file': dtsx_file.name,
                     'error': str(e)
                 })
-        
+        # Print summary
+        if results:
+            app.print_summary(results)
+            
+            # Generate unified analysis report (post LLM validation)
+            analysis_file = app.output_base / 'analysis' / 'conversion_report.json'
+            analysis_data = app._generate_unified_analysis(results)
+            
+            with open(analysis_file, 'w') as f:
+                json.dump(analysis_data, f, indent=2)
+            
+            logger.info(f"\n[SAVED] Analysis report: {analysis_file}")
+            
         return results
     
     def _should_use_llm_validation(self, parsed_data: dict, stats: dict) -> bool:

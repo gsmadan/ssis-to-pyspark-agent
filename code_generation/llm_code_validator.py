@@ -381,9 +381,6 @@ Return only the final PySpark code (no markdown, no narration)."""
                     logger.warning(f"OpenAI API call failed (attempt {attempt}): {e}")
                     logger.info(f"Retrying in {wait_time} seconds...")
                     time.sleep(wait_time)
-                else:
-                    logger.error(f"OpenAI API call failed after {max_retries} attempts: {e}")
-                    raise
 
                 else:
                     logger.error(f"OpenAI API call failed after {max_retries} attempts: {e}")
